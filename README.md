@@ -13,3 +13,7 @@ tech stack:
 ![Postman](https://img.shields.io/badge/-Postman-090909?style=for-the-badge&logo=Postman)
 ![MongoDB](https://img.shields.io/badge/-MongoDB-090909?style=for-the-badge&logo=MongoDB)
 ![Swagger](https://img.shields.io/badge/-Swagger-090909?style=for-the-badge&logo=Swagger)
+
+application by link: - - -
+
+api documentation: /docs
