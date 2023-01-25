@@ -1,6 +1,35 @@
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsString,
+  MinLength,
+  IsEmail,
+  IsNotEmpty,
+  MaxLength,
+} from 'class-validator';
+
+import { UsernameValidation } from 'src/common/validation/users/username/username-validation';
+import { PasswordValidation } from 'src/common/validation/users/password/password-validation';
+import { EmailValidation } from 'src/common/validation/users/email/email-validation';
+
 export class CreateUserDto {
+  @ApiProperty()
+  @IsString({ message: UsernameValidation.IsString })
+  @IsNotEmpty({ message: UsernameValidation.IsNotEmpty })
+  @MinLength(4, { message: UsernameValidation.MinLength })
+  @MaxLength(40, { message: UsernameValidation.MaxLength })
   username: string;
+
+  @ApiProperty()
+  @IsString({ message: PasswordValidation.IsString })
+  @IsNotEmpty({ message: PasswordValidation.IsNotEmpty })
+  @MinLength(8, { message: PasswordValidation.MinLength })
   password: string;
+
+  @ApiProperty()
+  @IsString({ message: EmailValidation.IsString })
+  @IsNotEmpty({ message: EmailValidation.IsNotEmpty })
+  @MinLength(8, { message: EmailValidation.MinLength })
+  @IsEmail({ IsEmail: true }, { message: EmailValidation.IsEmail })
   email: string;
 }
 
