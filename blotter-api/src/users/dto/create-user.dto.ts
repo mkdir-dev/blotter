@@ -29,7 +29,7 @@ export class CreateUserDto {
   @IsString({ message: EmailValidation.IsString })
   @IsNotEmpty({ message: EmailValidation.IsNotEmpty })
   @MinLength(8, { message: EmailValidation.MinLength })
-  @IsEmail({ IsEmail: true }, { message: EmailValidation.IsEmail })
+  @IsEmail({}, { message: EmailValidation.IsEmail })
   email: string;
 }
 

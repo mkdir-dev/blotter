@@ -1,9 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import validator from 'validator';
 
 // import { genderEnum } from '../enums/gender.enum';
 import { roleEnum } from '../enums/role.enum';
 import { statusEnum } from '../enums/status.enum';
+import { EmailValidation } from 'src/common/validation/users/email/email-validation';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -18,7 +20,17 @@ export class User {
   @Prop({ required: true, minLength: 8 })
   password: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({
+    required: true,
+    unique: true,
+    minLength: 8,
+    validate: {
+      validator(value: string): boolean {
+        return validator.isEmail(value);
+      },
+      message: EmailValidation.IsEmail,
+    },
+  })
   email: string;
 
   @Prop({ default: null })
