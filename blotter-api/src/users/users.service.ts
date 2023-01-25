@@ -21,14 +21,23 @@ export class UsersService {
     @InjectModel('User') private readonly userModel: Model<UserDocument>,
   ) {}
 
+  async hashPassword(password: string): Promise<string | Error> {
+    return await bcrypt
+      .hash(password, 16)
+      .then((hash): string => hash)
+      .catch((): Error => {
+        throw new InternalServerErrorException(ServerError.InternalServerError);
+      });
+  }
+
   async createUser(
     createUserDto: CreateUserDto,
   ): Promise<ResponseCreateUserDto | Error> {
-    const hash = await bcrypt.hash(createUserDto.password, 16);
+    const hash = await this.hashPassword(createUserDto.password);
     const uuid = uuidv4();
     const date = format(new Date(), 'yyyy-MM-dd');
 
-    if (!hash || !uuid || !date) {
+    if (!uuid || !date) {
       throw new InternalServerErrorException(ServerError.InternalServerError);
     }
 
