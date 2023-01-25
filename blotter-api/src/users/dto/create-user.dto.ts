@@ -4,6 +4,12 @@ export class CreateUserDto {
   email: string;
 }
 
+export class ResponseCreateUserDto {
+  uuid: string;
+  username: string;
+  email: string;
+}
+
 // ! для создания админа
 // role: string[];
 

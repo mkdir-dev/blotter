@@ -12,7 +12,7 @@ export class User {
   @Prop({ required: true, unique: true })
   uuid: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, minLength: 8 })
   username: string;
 
   @Prop({ required: true, minLength: 8 })
