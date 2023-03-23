@@ -72,7 +72,7 @@ uuid: string; // @Prop({ required: true, unique: true })
   gender: string | null;
 
   // @Prop({ default: null })
-  registration_date: string | null;
+  createdAt: string | null;
 
   /*
   @Prop({

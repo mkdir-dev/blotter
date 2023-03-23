@@ -40,6 +40,9 @@ export class User {
   surname: string | null;
 
   @Prop({ default: null })
+  birthday: number | null;
+
+  @Prop({ default: null })
   avatar: string | null;
 
   @Prop({ default: null })
@@ -56,7 +59,10 @@ export class User {
   gender: 'male' | 'female' | 'non-binary' | null;
 
   @Prop({ default: null })
-  registration_date: string | null;
+  createdAt: number | null;
+
+  @Prop({ default: null })
+  updatedAt: number | null;
 
   @Prop({
     type: [String],
