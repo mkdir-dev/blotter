@@ -14,6 +14,7 @@ import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto, ResponseCreateUserDto } from './dto/create-user.dto';
 import { UserError } from 'src/common/errors/users/users-errors';
 import { ServerError } from 'src/common/errors/server/server-errors';
+import { ResponseGetUserByIdDto } from './dto/get-user-by-id.dto';
 
 @Injectable()
 export class UsersService {
@@ -50,15 +51,14 @@ export class UsersService {
         createdAt: date,
         updatedAt: date,
       })
-      .then((user: User): ResponseCreateUserDto => {
-        console.log(user);
-        return {
+      .then(
+        (user: User): ResponseCreateUserDto => ({
           id: user._id,
           uuid: user.uuid,
           username: user.username,
           email: user.email,
-        };
-      })
+        }),
+      )
       .catch((err): Error => {
         if (err.name === 'ValidationError') {
           throw new BadRequestException(UserError.ValidationError);
@@ -75,11 +75,30 @@ export class UsersService {
     return newCreateUser;
   }
 
-  async getUserById(id: string): Promise<any | Error> {
+  async getUserById(id: string): Promise<ResponseGetUserByIdDto | Error> {
     const user = this.userModel
       .findById(id)
       .orFail(new Error('NotFound'))
-      .then((user: any): any => user)
+      .then(
+        (user: User): ResponseGetUserByIdDto => ({
+          id: user._id,
+          uuid: user.uuid,
+          username: user.username,
+          email: user.email,
+          name: user.name,
+          surname: user.surname,
+          birthday: user.birthday,
+          avatar: user.avatar,
+          phone: user.phone,
+          country: user.country,
+          city: user.city,
+          gender: user.gender,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          role: user.role,
+          status: user.status,
+        }),
+      )
       .catch((err): Error => {
         if (err.name === 'CastError') {
           throw new BadRequestException(UserError.BadRequestError);
@@ -92,4 +111,6 @@ export class UsersService {
 
     return user;
   }
+
+  // async getUsers()
 }
