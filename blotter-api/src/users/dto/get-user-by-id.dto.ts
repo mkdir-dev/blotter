@@ -19,6 +19,7 @@ export class ResponseGetUserByIdDto {
   readonly birthday: number | null;
   readonly avatar: string | null;
   readonly phone: number | null;
+  readonly nationality: string | null;
   readonly country: string | null;
   readonly city: string | null;
   readonly gender: 'male' | 'female' | 'non-binary' | null;

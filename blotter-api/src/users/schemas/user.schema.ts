@@ -51,6 +51,9 @@ export class User {
   phone: number | null;
 
   @Prop({ default: null })
+  nationality: string | null;
+
+  @Prop({ default: null })
   country: string | null;
 
   @Prop({ default: null })

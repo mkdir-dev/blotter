@@ -90,6 +90,7 @@ export class UsersService {
           birthday: user.birthday,
           avatar: user.avatar,
           phone: user.phone,
+          nationality: user.nationality,
           country: user.country,
           city: user.city,
           gender: user.gender,
