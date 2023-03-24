@@ -17,26 +17,27 @@ export class CreateUserDto {
   @IsNotEmpty({ message: UsernameValidation.IsNotEmpty })
   @MinLength(4, { message: UsernameValidation.MinLength })
   @MaxLength(40, { message: UsernameValidation.MaxLength })
-  username: string;
+  readonly username: string;
 
   @ApiProperty()
   @IsString({ message: PasswordValidation.IsString })
   @IsNotEmpty({ message: PasswordValidation.IsNotEmpty })
   @MinLength(8, { message: PasswordValidation.MinLength })
-  password: string;
+  readonly password: string;
 
   @ApiProperty()
   @IsString({ message: EmailValidation.IsString })
   @IsNotEmpty({ message: EmailValidation.IsNotEmpty })
   @MinLength(8, { message: EmailValidation.MinLength })
   @IsEmail({}, { message: EmailValidation.IsEmail })
-  email: string;
+  readonly email: string;
 }
 
 export class ResponseCreateUserDto {
-  uuid: string;
-  username: string;
-  email: string;
+  readonly id: string;
+  readonly uuid: string;
+  readonly username: string;
+  readonly email: string;
 }
 
 // ! для создания админа

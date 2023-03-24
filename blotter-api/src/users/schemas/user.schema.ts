@@ -73,6 +73,8 @@ export class User {
 
   @Prop({ default: statusEnum.active, enum: Object.values(statusEnum) })
   status: string;
+
+  readonly _id: string;
 }
 
 export const Userchema = SchemaFactory.createForClass(User);

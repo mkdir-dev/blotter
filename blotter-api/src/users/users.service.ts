@@ -1,6 +1,7 @@
 import {
   Injectable,
   BadRequestException,
+  NotFoundException,
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -49,46 +50,46 @@ export class UsersService {
         createdAt: date,
         updatedAt: date,
       })
-      .then(
-        (user: User): ResponseCreateUserDto => ({
+      .then((user: User): ResponseCreateUserDto => {
+        console.log(user);
+        return {
+          id: user._id,
           uuid: user.uuid,
           username: user.username,
           email: user.email,
-        }),
-      )
+        };
+      })
       .catch((err): Error => {
         if (err.name === 'ValidationError') {
-          throw new BadRequestException([UserError.ValidationError]);
+          throw new BadRequestException(UserError.ValidationError);
         }
         if (err.name === 'CastError') {
-          throw new BadRequestException([UserError.BadRequestError]);
+          throw new BadRequestException(UserError.BadRequestError);
         }
         if (err.name === 'MongoError' || err.code === 11000) {
-          throw new ConflictException([UserError.ConflictError]);
+          throw new ConflictException(UserError.ConflictError);
         }
-        throw new InternalServerErrorException([
-          ServerError.InternalServerError,
-        ]);
+        throw new InternalServerErrorException(ServerError.InternalServerError);
       });
 
     return newCreateUser;
   }
 
-  /*
-  module.exports.getUser = (req, res, next) => {
-  User.findById(req.user)
-    .orFail(new Error('NotFound'))
-    .then((user) => res.status(SUCCESS_OK).send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequestError(userErr.BadRequestError);
-      }
-      if (err.message === 'NotFound') {
-        throw new NotFoundError(userErr.NotFoundError);
-      }
-      throw new InternalServerError(serverErr.InternalServerError);
-    })
-    .catch(next);
-};
-  */
+  async getUserById(id: string): Promise<any | Error> {
+    const user = this.userModel
+      .findById(id)
+      .orFail(new Error('NotFound'))
+      .then((user: any): any => user)
+      .catch((err): Error => {
+        if (err.name === 'CastError') {
+          throw new BadRequestException(UserError.BadRequestError);
+        }
+        if (err.message === 'NotFound') {
+          throw new NotFoundException(UserError.NotFoundError);
+        }
+        throw new InternalServerErrorException(ServerError.InternalServerError);
+      });
+
+    return user;
+  }
 }
