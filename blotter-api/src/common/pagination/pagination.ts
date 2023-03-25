@@ -15,7 +15,7 @@ export const handlePagination = (data: PaginationParans): Meta => {
 
   const last_page = Math.ceil(total / per_page);
 
-  if (last_page < page)
+  if (last_page < page && total !== 0)
     throw new BadRequestException(
       `Старницы ${page} не существует. Всего страниц: ${last_page}`,
     );

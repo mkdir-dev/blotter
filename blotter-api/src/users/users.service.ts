@@ -136,11 +136,32 @@ export class UsersService {
     }
 
     if (query.sort) {
-      const sortKey = query.sort.toLocaleLowerCase().replace(/-/gi, '');
+      const sortKey = query.sort.toLocaleLowerCase().replace(/[^a-z]/gi, '');
       const sortValue = query.sort.replace(/[a-z]/gi, '') ? -1 : 1;
+      const sortValues = [
+        'username',
+        'email',
+        'name',
+        'surname',
+        'birthday',
+        'nationality',
+        'country',
+        'city',
+        'gender',
+        'createdAt',
+        'updatedAt',
+        'status',
+      ];
 
-      console.log('sortKey', sortKey);
-      console.log('sortValue', sortValue);
+      const exist = sortValues.some((val) => val === sortKey);
+
+      if (!exist) {
+        throw new BadRequestException(
+          `Параметра сортировки ${
+            query.sort
+          } не существует. Возможные значения: ${sortValues.join(', ')}`,
+        );
+      }
 
       sort[`${sortKey}`] = sortValue;
     }
@@ -164,7 +185,7 @@ export class UsersService {
     const users = await this.userModel
       .find(search)
       .sort(sort)
-      .skip((pagination.page - 1) * pagination.per_page) // (page - 1) * limit
+      .skip((pagination.page - 1) * pagination.per_page)
       .limit(pagination.per_page)
       .exec()
       .then((users: User[]) => {
