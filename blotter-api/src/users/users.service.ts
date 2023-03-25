@@ -137,7 +137,8 @@ export class UsersService {
 
     if (query.sort) {
       const sortKey = query.sort.toLocaleLowerCase().replace(/[^a-z]/gi, '');
-      const sortValue = query.sort.replace(/[a-z]/gi, '') ? -1 : 1;
+      const sortValue = query.sort.replace(/[^-]/gi, '') ? -1 : 1;
+
       const sortValues = [
         'username',
         'email',

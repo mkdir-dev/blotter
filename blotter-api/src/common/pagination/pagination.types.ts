@@ -1,4 +1,4 @@
-export interface PaginationParans {
+export interface PaginationParams {
   page?: string;
   per_page?: string;
   total: number;

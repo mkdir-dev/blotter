@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
-import { PaginationParans, Meta } from './pagination.types';
+import { PaginationParams, Meta } from './pagination.types';
 
-export const handlePagination = (data: PaginationParans): Meta => {
+export const handlePagination = (data: PaginationParams): Meta => {
   const { total } = data;
 
   const page: number = data.page ? parseInt(data.page as string) || 1 : 1;
