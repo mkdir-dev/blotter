@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Length } from 'class-validator';
+import { Meta } from 'src/common/pagination/pagination.types';
 import { IdValidation } from 'src/common/validation/general/id/id-validation';
 
 export class GetUserByIdDto {
@@ -15,9 +16,15 @@ export class GetUsersQueryParamsDto {
 
   @ApiProperty({ required: false })
   readonly sort?: string;
+
+  @ApiProperty({ required: false })
+  readonly page?: string;
+
+  @ApiProperty({ required: false })
+  readonly per_page?: string;
 }
 
-export class ResponseGetUsers {
+export class ResponseGetUser {
   readonly id: string;
   readonly uuid: string;
   readonly username: string;
@@ -35,4 +42,9 @@ export class ResponseGetUsers {
   readonly updatedAt: number | null;
   readonly role: string[];
   readonly status: string;
+}
+
+export class ResponseGetUsersPagination {
+  meta: Meta;
+  data: ResponseGetUser[];
 }

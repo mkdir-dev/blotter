@@ -14,7 +14,12 @@ import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto, ResponseCreateUserDto } from './dto/create-user.dto';
 import { UserError } from 'src/common/errors/users/users-errors';
 import { ServerError } from 'src/common/errors/server/server-errors';
-import { GetUsersQueryParamsDto, ResponseGetUsers } from './dto/get-users.dto';
+import {
+  GetUsersQueryParamsDto,
+  ResponseGetUser,
+  ResponseGetUsersPagination,
+} from './dto/get-users.dto';
+import { handlePagination } from 'src/common/pagination/pagination';
 
 @Injectable()
 export class UsersService {
@@ -75,12 +80,12 @@ export class UsersService {
     return newCreateUser;
   }
 
-  async getUserById(id: string): Promise<ResponseGetUsers | Error> {
+  async getUserById(id: string): Promise<ResponseGetUser | Error> {
     const user = await this.userModel
       .findById(id)
       .orFail(new Error('NotFound'))
       .then(
-        (user: User): ResponseGetUsers => ({
+        (user: User): ResponseGetUser => ({
           id: user._id,
           uuid: user.uuid,
           username: user.username,
@@ -115,7 +120,7 @@ export class UsersService {
 
   async getUsers(
     query: GetUsersQueryParamsDto,
-  ): Promise<ResponseGetUsers[] | Error> {
+  ): Promise<ResponseGetUsersPagination | Error> {
     let search = {};
     const sort = {};
 
@@ -131,18 +136,40 @@ export class UsersService {
     }
 
     if (query.sort) {
-      const sortKey = query.sort.replace(/-/gi, '');
-      const sortValue = query.sort.replace(/[a-zа-яё]/gi, '') ? -1 : 1;
+      const sortKey = query.sort.toLocaleLowerCase().replace(/-/gi, '');
+      const sortValue = query.sort.replace(/[a-z]/gi, '') ? -1 : 1;
+
+      console.log('sortKey', sortKey);
+      console.log('sortValue', sortValue);
 
       sort[`${sortKey}`] = sortValue;
     }
 
+    const total = await this.userModel.count(search).catch((err) => {
+      if (err.name === 'CastError') {
+        throw new BadRequestException(UserError.BadRequestError);
+      }
+      if (err.message === 'NotFound') {
+        throw new NotFoundException(UserError.NotFoundError);
+      }
+      throw new InternalServerErrorException(ServerError.InternalServerError);
+    });
+
+    const pagination = handlePagination({
+      page: query.page,
+      per_page: query.per_page,
+      total,
+    });
+
     const users = await this.userModel
       .find(search)
       .sort(sort)
+      .skip((pagination.page - 1) * pagination.per_page) // (page - 1) * limit
+      .limit(pagination.per_page)
+      .exec()
       .then((users: User[]) => {
         return users.map(
-          (user): ResponseGetUsers => ({
+          (user): ResponseGetUser => ({
             id: user._id,
             uuid: user.uuid,
             username: user.username,
@@ -162,8 +189,20 @@ export class UsersService {
             status: user.status,
           }),
         );
+      })
+      .catch((err) => {
+        if (err.name === 'CastError') {
+          throw new BadRequestException(UserError.BadRequestError);
+        }
+        if (err.message === 'NotFound') {
+          throw new NotFoundException(UserError.NotFoundError);
+        }
+        throw new InternalServerErrorException(ServerError.InternalServerError);
       });
 
-    return users;
+    return {
+      meta: pagination,
+      data: users,
+    };
   }
 }

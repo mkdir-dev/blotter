@@ -15,7 +15,8 @@ import { CreateUserDto, ResponseCreateUserDto } from './dto/create-user.dto';
 import {
   GetUserByIdDto,
   GetUsersQueryParamsDto,
-  ResponseGetUsers,
+  ResponseGetUser,
+  ResponseGetUsersPagination,
 } from './dto/get-users.dto';
 
 @Controller('users')
@@ -38,7 +39,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   getUserById(
     @Param() params: GetUserByIdDto,
-  ): Promise<ResponseGetUsers | Error> {
+  ): Promise<ResponseGetUser | Error> {
     return this.usersService.getUserById(params.id);
   }
 
@@ -48,7 +49,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   getUsers(
     @Query() query: GetUsersQueryParamsDto,
-  ): Promise<ResponseGetUsers[] | Error> {
+  ): Promise<ResponseGetUsersPagination | Error> {
     return this.usersService.getUsers(query);
   }
 }
