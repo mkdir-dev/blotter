@@ -14,7 +14,7 @@ import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto, ResponseCreateUserDto } from './dto/create-user.dto';
 import { UserError } from 'src/common/errors/users/users-errors';
 import { ServerError } from 'src/common/errors/server/server-errors';
-import { ResponseGetUserByIdDto } from './dto/get-user-by-id.dto';
+import { GetUsersQueryParamsDto, ResponseGetUsers } from './dto/get-users.dto';
 
 @Injectable()
 export class UsersService {
@@ -75,12 +75,12 @@ export class UsersService {
     return newCreateUser;
   }
 
-  async getUserById(id: string): Promise<ResponseGetUserByIdDto | Error> {
-    const user = this.userModel
+  async getUserById(id: string): Promise<ResponseGetUsers | Error> {
+    const user = await this.userModel
       .findById(id)
       .orFail(new Error('NotFound'))
       .then(
-        (user: User): ResponseGetUserByIdDto => ({
+        (user: User): ResponseGetUsers => ({
           id: user._id,
           uuid: user.uuid,
           username: user.username,
@@ -113,5 +113,57 @@ export class UsersService {
     return user;
   }
 
-  // async getUsers()
+  async getUsers(
+    query: GetUsersQueryParamsDto,
+  ): Promise<ResponseGetUsers[] | Error> {
+    let search = {};
+    const sort = {};
+
+    if (query.search) {
+      search = {
+        $or: [
+          { username: new RegExp(query.search.toString(), 'i') },
+          { email: new RegExp(query.search.toString(), 'i') },
+          { name: new RegExp(query.search.toString(), 'i') },
+          { surname: new RegExp(query.search.toString(), 'i') },
+        ],
+      };
+    }
+
+    if (query.sort) {
+      const sortKey = query.sort.replace(/-/gi, '');
+      const sortValue = query.sort.replace(/[a-zа-яё]/gi, '') ? -1 : 1;
+
+      sort[`${sortKey}`] = sortValue;
+    }
+
+    const users = await this.userModel
+      .find(search)
+      .sort(sort)
+      .then((users: User[]) => {
+        return users.map(
+          (user): ResponseGetUsers => ({
+            id: user._id,
+            uuid: user.uuid,
+            username: user.username,
+            email: user.email,
+            name: user.name,
+            surname: user.surname,
+            birthday: user.birthday,
+            avatar: user.avatar,
+            phone: user.phone,
+            nationality: user.nationality,
+            country: user.country,
+            city: user.city,
+            gender: user.gender,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            role: user.role,
+            status: user.status,
+          }),
+        );
+      });
+
+    return users;
+  }
 }

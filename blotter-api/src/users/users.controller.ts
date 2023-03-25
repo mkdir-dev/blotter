@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Body,
   Param,
+  Query,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -13,15 +14,16 @@ import { UsersService } from './users.service';
 import { CreateUserDto, ResponseCreateUserDto } from './dto/create-user.dto';
 import {
   GetUserByIdDto,
-  ResponseGetUserByIdDto,
-} from './dto/get-user-by-id.dto';
+  GetUsersQueryParamsDto,
+  ResponseGetUsers,
+} from './dto/get-users.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiTags('users')
-  @ApiResponse({ status: 201, type: CreateUserDto })
+  @ApiResponse({ status: HttpStatus.CREATED, type: CreateUserDto })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   createUser(
@@ -31,22 +33,22 @@ export class UsersController {
   }
 
   @ApiTags('users')
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: HttpStatus.OK })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   getUserById(
     @Param() params: GetUserByIdDto,
-  ): Promise<ResponseGetUserByIdDto | Error> {
+  ): Promise<ResponseGetUsers | Error> {
     return this.usersService.getUserById(params.id);
   }
 
-  /*
   @ApiTags('users')
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: HttpStatus.OK })
   @Get()
   @HttpCode(HttpStatus.OK)
-  getUsers() {
-    return this.usersService.getUsers();
+  getUsers(
+    @Query() query: GetUsersQueryParamsDto,
+  ): Promise<ResponseGetUsers[] | Error> {
+    return this.usersService.getUsers(query);
   }
-  */
 }

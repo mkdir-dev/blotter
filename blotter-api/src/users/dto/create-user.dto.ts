@@ -12,20 +12,28 @@ import { PasswordValidation } from 'src/common/validation/users/password/passwor
 import { EmailValidation } from 'src/common/validation/users/email/email-validation';
 
 export class CreateUserDto {
-  @ApiProperty()
+  @ApiProperty({
+    minLength: 4,
+    maxLength: 40,
+  })
   @IsString({ message: UsernameValidation.IsString })
   @IsNotEmpty({ message: UsernameValidation.IsNotEmpty })
   @MinLength(4, { message: UsernameValidation.MinLength })
   @MaxLength(40, { message: UsernameValidation.MaxLength })
   readonly username: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    minLength: 8,
+  })
   @IsString({ message: PasswordValidation.IsString })
   @IsNotEmpty({ message: PasswordValidation.IsNotEmpty })
   @MinLength(8, { message: PasswordValidation.MinLength })
   readonly password: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'email: example@mail.com',
+    minLength: 8,
+  })
   @IsString({ message: EmailValidation.IsString })
   @IsNotEmpty({ message: EmailValidation.IsNotEmpty })
   @MinLength(8, { message: EmailValidation.MinLength })

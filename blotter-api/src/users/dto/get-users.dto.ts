@@ -9,7 +9,15 @@ export class GetUserByIdDto {
   readonly id: string;
 }
 
-export class ResponseGetUserByIdDto {
+export class GetUsersQueryParamsDto {
+  @ApiProperty({ required: false })
+  readonly search?: string;
+
+  @ApiProperty({ required: false })
+  readonly sort?: string;
+}
+
+export class ResponseGetUsers {
   readonly id: string;
   readonly uuid: string;
   readonly username: string;
