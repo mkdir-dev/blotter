@@ -60,8 +60,8 @@ export class User {
   @Prop({ default: null })
   city: string | null;
 
-  @Prop({ default: null, enum: Object.values(genderEnum) })
-  gender: genderEnum | null;
+  @Prop({ default: genderEnum.none, enum: Object.values(genderEnum) })
+  gender: genderEnum;
 
   @Prop({ default: null })
   createdAt: number | null;

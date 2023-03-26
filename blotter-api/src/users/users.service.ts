@@ -38,10 +38,8 @@ export class UsersService {
       });
   }
 
-  async registerUser(
-    RegisterUserDto: RegisterUserDto,
-  ): Promise<ResponseUser | Error> {
-    const hash = await this.hashPassword(RegisterUserDto.password);
+  async registerUser(data: RegisterUserDto): Promise<ResponseUser | Error> {
+    const hash = await this.hashPassword(data.password);
     const uuid = uuidv4();
     const date = Date.now();
 
@@ -52,8 +50,8 @@ export class UsersService {
     const newCreateUser: ResponseUser | Error = await this.userModel
       .create({
         uuid,
-        username: RegisterUserDto.username,
-        email: RegisterUserDto.email,
+        username: data.username,
+        email: data.email,
         password: hash,
         createdAt: date,
         updatedAt: date,
@@ -80,6 +78,8 @@ export class UsersService {
         }),
       )
       .catch((err): Error => {
+        console.log('err', err);
+
         if (err.name === 'ValidationError') {
           throw new BadRequestException(UserError.ValidationError);
         }
