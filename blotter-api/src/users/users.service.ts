@@ -21,6 +21,7 @@ import {
   ResponseUsersPagination,
 } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { valuesSortUsers } from './utils/constants';
 
 @Injectable()
 export class UsersService {
@@ -153,28 +154,13 @@ export class UsersService {
       const sortKey = query.sort.toLocaleLowerCase().replace(/[^a-z]/gi, '');
       const sortValue = query.sort.replace(/[^-]/gi, '') ? -1 : 1;
 
-      const sortValues = [
-        'username',
-        'email',
-        'name',
-        'surname',
-        'birthday',
-        'nationality',
-        'country',
-        'city',
-        'gender',
-        'createdAt',
-        'updatedAt',
-        'status',
-      ];
-
-      const exist = sortValues.some((val) => val === sortKey);
+      const exist = valuesSortUsers.some((val) => val === sortKey);
 
       if (!exist) {
         throw new BadRequestException(
           `Параметра сортировки ${
             query.sort
-          } не существует. Возможные значения: ${sortValues.join(', ')}`,
+          } не существует. Возможные значения: ${valuesSortUsers.join(', ')}`,
         );
       }
 
