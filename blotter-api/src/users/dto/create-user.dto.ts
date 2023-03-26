@@ -103,17 +103,17 @@ export class CreateUserDto extends RegisterUserDto {
   @IsString({ message: GenderValidation.IsString })
   @IsNotEmpty({ message: GenderValidation.IsNotEmpty })
   @IsEnum(genderEnum, { message: GenderValidation.IsEnum })
-  readonly gender?: 'male' | 'female' | 'non-binary';
+  readonly gender?: genderEnum;
 
   @ApiProperty({ required: false })
   @IsString({ message: RoleValidation.IsString })
   @IsNotEmpty({ message: RoleValidation.IsNotEmpty })
   @IsEnum(roleEnum, { message: RoleValidation.IsEnum })
-  readonly role?: 'user' | 'admin';
+  readonly role?: roleEnum;
 
   @ApiProperty({ required: false })
   @IsString({ message: StatusValidation.IsString })
   @IsNotEmpty({ message: StatusValidation.IsNotEmpty })
   @IsEnum(statusEnum, { message: StatusValidation.IsEnum })
-  readonly status?: 'block' | 'active';
+  readonly status?: statusEnum;
 }

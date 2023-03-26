@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Length } from 'class-validator';
 import { IdValidation } from 'src/common/validation/general/general-validation';
+import { genderEnum } from '../enums/gender.enum';
+import { roleEnum } from '../enums/role.enum';
+import { statusEnum } from '../enums/status.enum';
 
 export class FindUserByIdDto {
   @ApiProperty()
@@ -22,9 +25,9 @@ export class ResponseUser {
   readonly nationality: string | null;
   readonly country: string | null;
   readonly city: string | null;
-  readonly gender: 'male' | 'female' | 'non-binary' | null;
+  readonly gender: genderEnum | null;
   readonly createdAt: number | null;
   readonly updatedAt: number | null;
-  readonly role: 'user' | 'admin';
-  readonly status: 'block' | 'active';
+  readonly role: roleEnum;
+  readonly status: statusEnum;
 }

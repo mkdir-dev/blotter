@@ -61,7 +61,7 @@ export class User {
   city: string | null;
 
   @Prop({ default: null, enum: Object.values(genderEnum) })
-  gender: 'male' | 'female' | 'non-binary' | null;
+  gender: genderEnum | null;
 
   @Prop({ default: null })
   createdAt: number | null;
@@ -70,10 +70,10 @@ export class User {
   updatedAt: number | null;
 
   @Prop({ default: roleEnum.user, enum: Object.values(roleEnum) })
-  role: 'user' | 'admin';
+  role: roleEnum;
 
   @Prop({ default: statusEnum.active, enum: Object.values(statusEnum) })
-  status: 'block' | 'active';
+  status: statusEnum;
 }
 
 export const Userchema = SchemaFactory.createForClass(User);
