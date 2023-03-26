@@ -2,16 +2,34 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
   MinLength,
+  MaxLength,
   IsEmail,
   IsNotEmpty,
-  MaxLength,
+  IsNumber,
+  IsPhoneNumber,
+  IsEnum,
 } from 'class-validator';
 
-import { UsernameValidation } from 'src/common/validation/users/username/username-validation';
-import { PasswordValidation } from 'src/common/validation/users/password/password-validation';
-import { EmailValidation } from 'src/common/validation/users/email/email-validation';
+import { BirthdayValidation } from 'src/common/validation/general/general-validation';
+import {
+  EmailValidation,
+  GenderValidation,
+  NameValidation,
+  NationalityValidation,
+  PasswordValidation,
+  PhoneValidation,
+  RoleValidation,
+  StatusValidation,
+  SurnameValidation,
+  UsernameValidation,
+  СityValidation,
+  СountryValidation,
+} from 'src/common/validation/users/users-validation';
+import { genderEnum } from '../enums/gender.enum';
+import { roleEnum } from '../enums/role.enum';
+import { statusEnum } from '../enums/status.enum';
 
-export class CreateUserDto {
+export class RegisterUserDto {
   @ApiProperty({
     minLength: 4,
     maxLength: 40,
@@ -41,56 +59,61 @@ export class CreateUserDto {
   readonly email: string;
 }
 
-export class ResponseCreateUserDto {
-  readonly id: string;
-  readonly uuid: string;
-  readonly username: string;
-  readonly email: string;
+export class CreateUserDto extends RegisterUserDto {
+  @ApiProperty({ required: false })
+  @IsString({ message: NameValidation.IsString })
+  @IsNotEmpty({ message: NameValidation.IsNotEmpty })
+  readonly name?: string;
+
+  @ApiProperty({ required: false })
+  @IsString({ message: SurnameValidation.IsString })
+  @IsNotEmpty({ message: SurnameValidation.IsNotEmpty })
+  readonly surname?: string;
+
+  @ApiProperty({ required: false })
+  @IsNumber(
+    { allowNaN: false, allowInfinity: false },
+    { message: BirthdayValidation.IsNumber },
+  )
+  @IsNotEmpty({ message: BirthdayValidation.IsNotEmpty })
+  readonly birthday?: number;
+
+  @ApiProperty({ required: false })
+  @IsString({ message: PhoneValidation.IsString })
+  @IsNotEmpty({ message: PhoneValidation.IsNotEmpty })
+  @IsPhoneNumber('RU', { message: PhoneValidation.IsPhoneNumber })
+  readonly phone?: string;
+
+  @ApiProperty({ required: false })
+  @IsString({ message: NationalityValidation.IsString })
+  @IsNotEmpty({ message: NationalityValidation.IsNotEmpty })
+  readonly nationality?: string;
+
+  @ApiProperty({ required: false })
+  @IsString({ message: СountryValidation.IsString })
+  @IsNotEmpty({ message: СountryValidation.IsNotEmpty })
+  readonly country?: string;
+
+  @ApiProperty({ required: false })
+  @IsString({ message: СityValidation.IsString })
+  @IsNotEmpty({ message: СityValidation.IsNotEmpty })
+  readonly city?: string;
+
+  @ApiProperty({ required: false })
+  @IsString({ message: GenderValidation.IsString })
+  @IsNotEmpty({ message: GenderValidation.IsNotEmpty })
+  @IsEnum(genderEnum, { message: GenderValidation.IsEnum })
+  readonly gender?: 'male' | 'female' | 'non-binary';
+
+  @ApiProperty({ required: false })
+  @IsString({ message: RoleValidation.IsString })
+  @IsNotEmpty({ message: RoleValidation.IsNotEmpty })
+  @IsEnum(roleEnum, { message: RoleValidation.IsEnum })
+  readonly role?: 'user' | 'admin';
+
+  @ApiProperty({ required: false })
+  @IsString({ message: StatusValidation.IsString })
+  @IsNotEmpty({ message: StatusValidation.IsNotEmpty })
+  @IsEnum(statusEnum, { message: StatusValidation.IsEnum })
+  readonly status?: 'block' | 'active';
 }
-
-// ! для создания админа
-// role: string[];
-
-/*
-uuid: string; // @Prop({ required: true, unique: true })
-  username: string; // @Prop({ required: true, unique: true })
-  password: string; // @Prop({ required: true, minLength: 8 })
-  email: string; // @Prop({ required: true, unique: true })
-*/
-
-/*
-// @Prop({ default: null })
-  name: string | null;
-
-  // @Prop({ default: null })
-  surname: string | null;
-
-  // @Prop({ default: null })
-  avatar: string | null;
-
-  // @Prop({ default: null })
-  phone: number | null;
-
-  // @Prop({ default: null })
-  country: string | null;
-
-  // @Prop({ default: null })
-  city: string | null;
-
-  // @Prop({ default: null, enum: Object.values(genderEnum) })
-  gender: string | null;
-
-  // @Prop({ default: null })
-  createdAt: string | null;
-
-  /*
-  @Prop({
-    type: [String],
-    default: [roleEnum.user],
-    enum: Object.values(roleEnum),
-  })
-  */
-// role: string[];
-
-// @Prop({ default: statusEnum.active, enum: Object.values(statusEnum) })
-// status: 'active' | 'block';

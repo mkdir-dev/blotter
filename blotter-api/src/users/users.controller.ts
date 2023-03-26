@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Patch,
   HttpCode,
   HttpStatus,
   Body,
@@ -11,45 +12,63 @@ import {
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { UsersService } from './users.service';
-import { CreateUserDto, ResponseCreateUserDto } from './dto/create-user.dto';
+import { FindUserByIdDto, ResponseUser } from './dto/general-user.dto';
+import { RegisterUserDto } from './dto/create-user.dto';
 import {
-  GetUserByIdDto,
   GetUsersQueryParamsDto,
-  ResponseGetUser,
-  ResponseGetUsersPagination,
+  ResponseUsersPagination,
 } from './dto/get-users.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { handleUpdateUserRoute } from './middlewares/handleBodyUpdateUser';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiTags('users')
-  @ApiResponse({ status: HttpStatus.CREATED, type: CreateUserDto })
+  @ApiResponse({ status: HttpStatus.CREATED, type: RegisterUserDto })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  createUser(
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<ResponseCreateUserDto | Error> {
-    return this.usersService.createUser(createUserDto);
+  async registerUser(
+    @Body() RegisterUserDto: RegisterUserDto,
+  ): Promise<ResponseUser | Error> {
+    return await this.usersService.registerUser(RegisterUserDto);
   }
 
   @ApiTags('users')
   @ApiResponse({ status: HttpStatus.OK })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  getUserById(
-    @Param() params: GetUserByIdDto,
-  ): Promise<ResponseGetUser | Error> {
-    return this.usersService.getUserById(params.id);
+  async getUserById(
+    @Param() params: FindUserByIdDto,
+  ): Promise<ResponseUser | Error> {
+    const { id } = params;
+
+    return await this.usersService.getUserById(id);
   }
 
   @ApiTags('users')
   @ApiResponse({ status: HttpStatus.OK })
   @Get()
   @HttpCode(HttpStatus.OK)
-  getUsers(
+  async getUsers(
     @Query() query: GetUsersQueryParamsDto,
-  ): Promise<ResponseGetUsersPagination | Error> {
-    return this.usersService.getUsers(query);
+  ): Promise<ResponseUsersPagination | Error> {
+    return await this.usersService.getUsers(query);
+  }
+
+  @ApiTags('users')
+  @ApiResponse({ status: HttpStatus.OK })
+  @Patch(':id')
+  @HttpCode(HttpStatus.OK)
+  async updateUser(
+    @Param() params: FindUserByIdDto,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<ResponseUser | Error> {
+    const { id } = params;
+
+    handleUpdateUserRoute(updateUserDto);
+
+    return await this.usersService.updateUser({ id, data: updateUserDto });
   }
 }

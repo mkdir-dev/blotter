@@ -5,7 +5,8 @@ import validator from 'validator';
 // import { genderEnum } from '../enums/gender.enum';
 import { roleEnum } from '../enums/role.enum';
 import { statusEnum } from '../enums/status.enum';
-import { EmailValidation } from 'src/common/validation/users/email/email-validation';
+import { genderEnum } from '../enums/gender.enum';
+import { EmailValidation } from 'src/common/validation/users/users-validation';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -48,7 +49,7 @@ export class User {
   avatar: string | null;
 
   @Prop({ default: null })
-  phone: number | null;
+  phone: string | null;
 
   @Prop({ default: null })
   nationality: string | null;
@@ -59,8 +60,7 @@ export class User {
   @Prop({ default: null })
   city: string | null;
 
-  // @Prop({ default: null, enum: Object.values(genderEnum) })
-  @Prop({ default: null })
+  @Prop({ default: null, enum: Object.values(genderEnum) })
   gender: 'male' | 'female' | 'non-binary' | null;
 
   @Prop({ default: null })
@@ -69,15 +69,11 @@ export class User {
   @Prop({ default: null })
   updatedAt: number | null;
 
-  @Prop({
-    type: [String],
-    default: [roleEnum.user],
-    enum: Object.values(roleEnum),
-  })
-  role: string[];
+  @Prop({ default: roleEnum.user, enum: Object.values(roleEnum) })
+  role: 'user' | 'admin';
 
   @Prop({ default: statusEnum.active, enum: Object.values(statusEnum) })
-  status: string;
+  status: 'block' | 'active';
 }
 
 export const Userchema = SchemaFactory.createForClass(User);

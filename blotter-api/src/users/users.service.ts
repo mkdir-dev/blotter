@@ -10,16 +10,17 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
-import { User, UserDocument } from './schemas/user.schema';
-import { CreateUserDto, ResponseCreateUserDto } from './dto/create-user.dto';
 import { UserError } from 'src/common/errors/users/users-errors';
 import { ServerError } from 'src/common/errors/server/server-errors';
+import { handlePagination } from 'src/common/pagination/pagination';
+import { User, UserDocument } from './schemas/user.schema';
+import { ResponseUser } from './dto/general-user.dto';
+import { RegisterUserDto } from './dto/create-user.dto';
 import {
   GetUsersQueryParamsDto,
-  ResponseGetUser,
-  ResponseGetUsersPagination,
+  ResponseUsersPagination,
 } from './dto/get-users.dto';
-import { handlePagination } from 'src/common/pagination/pagination';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -36,10 +37,10 @@ export class UsersService {
       });
   }
 
-  async createUser(
-    createUserDto: CreateUserDto,
-  ): Promise<ResponseCreateUserDto | Error> {
-    const hash = await this.hashPassword(createUserDto.password);
+  async registerUser(
+    RegisterUserDto: RegisterUserDto,
+  ): Promise<ResponseUser | Error> {
+    const hash = await this.hashPassword(RegisterUserDto.password);
     const uuid = uuidv4();
     const date = Date.now();
 
@@ -47,21 +48,34 @@ export class UsersService {
       throw new InternalServerErrorException(ServerError.InternalServerError);
     }
 
-    const newCreateUser: ResponseCreateUserDto | Error = await this.userModel
+    const newCreateUser: ResponseUser | Error = await this.userModel
       .create({
         uuid,
-        username: createUserDto.username,
-        email: createUserDto.email,
+        username: RegisterUserDto.username,
+        email: RegisterUserDto.email,
         password: hash,
         createdAt: date,
         updatedAt: date,
       })
       .then(
-        (user: User): ResponseCreateUserDto => ({
+        (user: User): ResponseUser => ({
           id: user._id,
           uuid: user.uuid,
           username: user.username,
           email: user.email,
+          name: user.name,
+          surname: user.surname,
+          birthday: user.birthday,
+          avatar: user.avatar,
+          phone: user.phone,
+          nationality: user.nationality,
+          country: user.country,
+          city: user.city,
+          gender: user.gender,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          role: user.role,
+          status: user.status,
         }),
       )
       .catch((err): Error => {
@@ -80,12 +94,12 @@ export class UsersService {
     return newCreateUser;
   }
 
-  async getUserById(id: string): Promise<ResponseGetUser | Error> {
+  async getUserById(id: string): Promise<ResponseUser | Error> {
     const user = await this.userModel
       .findById(id)
       .orFail(new Error('NotFound'))
       .then(
-        (user: User): ResponseGetUser => ({
+        (user: User): ResponseUser => ({
           id: user._id,
           uuid: user.uuid,
           username: user.username,
@@ -120,7 +134,7 @@ export class UsersService {
 
   async getUsers(
     query: GetUsersQueryParamsDto,
-  ): Promise<ResponseGetUsersPagination | Error> {
+  ): Promise<ResponseUsersPagination | Error> {
     let search = {};
     const sort = {};
 
@@ -191,7 +205,7 @@ export class UsersService {
       .exec()
       .then((users: User[]) => {
         return users.map(
-          (user): ResponseGetUser => ({
+          (user): ResponseUser => ({
             id: user._id,
             uuid: user.uuid,
             username: user.username,
@@ -226,5 +240,61 @@ export class UsersService {
       meta: pagination,
       data: users,
     };
+  }
+
+  async updateUser({
+    id,
+    data,
+  }: {
+    id: string;
+    data: UpdateUserDto;
+  }): Promise<ResponseUser | Error> {
+    const date = Date.now();
+
+    const user = await this.userModel
+      .findByIdAndUpdate(
+        id,
+        { ...data, updatedAt: date },
+        { new: true, runValidators: true },
+      )
+      .orFail(new Error('NotFound'))
+      .then(
+        (user: User): ResponseUser => ({
+          id: user._id,
+          uuid: user.uuid,
+          username: user.username,
+          email: user.email,
+          name: user.name,
+          surname: user.surname,
+          birthday: user.birthday,
+          avatar: user.avatar,
+          phone: user.phone,
+          nationality: user.nationality,
+          country: user.country,
+          city: user.city,
+          gender: user.gender,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          role: user.role,
+          status: user.status,
+        }),
+      )
+      .catch((err): Error => {
+        if (err.name === 'ValidationError') {
+          throw new BadRequestException(UserError.ValidationError);
+        }
+        if (err.name === 'CastError') {
+          throw new BadRequestException(UserError.BadRequestError);
+        }
+        if (err.message === 'NotFound') {
+          throw new NotFoundException(UserError.NotFoundError);
+        }
+        if (err.name === 'MongoError' || err.code === 11000) {
+          throw new ConflictException(UserError.ConflictError);
+        }
+        throw new InternalServerErrorException(ServerError.InternalServerError);
+      });
+
+    return user;
   }
 }
