@@ -3,6 +3,7 @@ import {
   Post,
   Get,
   Patch,
+  Delete,
   HttpCode,
   HttpStatus,
   Body,
@@ -71,4 +72,16 @@ export class UsersController {
 
     return await this.usersService.updateUser({ id, data: updateUserDto });
   }
+
+  @ApiTags('users')
+  @ApiResponse({ status: HttpStatus.NO_CONTENT })
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteUser(@Param() params: FindUserByIdDto): Promise<string | Error> {
+    const { id } = params;
+
+    return await this.usersService.deleteUser(id);
+  }
+
+  // deleteManyUsers
 }

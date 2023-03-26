@@ -283,4 +283,17 @@ export class UsersService {
 
     return user;
   }
+
+  async deleteUser(id: string): Promise<string | Error> {
+    return await this.userModel
+      .findByIdAndRemove(id)
+      .orFail(new Error('NotFound'))
+      .then((user: User) => `Пользователь ${user.username} удален`)
+      .catch((err) => {
+        if (err.message === 'NotFound') {
+          throw new NotFoundException(UserError.NotFoundError);
+        }
+        throw new InternalServerErrorException(ServerError.InternalServerError);
+      });
+  }
 }
