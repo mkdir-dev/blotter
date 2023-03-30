@@ -20,6 +20,7 @@ import {
   ResponseUsersPagination,
 } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { DeleteUserDto } from './dto/delete-user.dto';
 import { handleUpdateUserRoute } from './middlewares/handleBodyUpdateUser';
 
 @Controller('users')
@@ -31,9 +32,9 @@ export class UsersController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async registerUser(
-    @Body() RegisterUserDto: RegisterUserDto,
+    @Body() body: RegisterUserDto,
   ): Promise<ResponseUser | Error> {
-    return await this.usersService.registerUser(RegisterUserDto);
+    return await this.usersService.registerUser(body);
   }
 
   @ApiTags('users')
@@ -83,5 +84,11 @@ export class UsersController {
     return await this.usersService.deleteUser(id);
   }
 
-  // deleteManyUsers
+  @ApiTags('users')
+  @ApiResponse({ status: HttpStatus.NO_CONTENT })
+  @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteManyUsers(@Body() body: DeleteUserDto): Promise<string | Error> {
+    return await this.usersService.deleteManyUsers(body);
+  }
 }

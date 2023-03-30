@@ -22,6 +22,7 @@ import {
 } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { valuesSortUsers } from './utils/constants';
+import { DeleteUserDto } from './dto/delete-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -78,8 +79,6 @@ export class UsersService {
         }),
       )
       .catch((err): Error => {
-        console.log('err', err);
-
         if (err.name === 'ValidationError') {
           throw new BadRequestException(UserError.ValidationError);
         }
@@ -286,10 +285,28 @@ export class UsersService {
 
   async deleteUser(id: string): Promise<string | Error> {
     return await this.userModel
-      .findByIdAndRemove(id)
+      .findByIdAndDelete(id)
       .orFail(new Error('NotFound'))
       .then((user: User) => `Пользователь ${user.username} удален`)
       .catch((err) => {
+        if (err.message === 'NotFound') {
+          throw new NotFoundException(UserError.NotFoundError);
+        }
+        throw new InternalServerErrorException(ServerError.InternalServerError);
+      });
+  }
+
+  async deleteManyUsers(data: DeleteUserDto): Promise<string | Error> {
+    const { ids } = data;
+
+    return await this.userModel
+      .deleteMany({ _id: { $in: ids } })
+      .orFail(new Error('NotFound'))
+      .then(() => `Пользователи ${ids.join(', ')} удалены`)
+      .catch((err) => {
+        if (err.name === 'CastError') {
+          throw new BadRequestException(UserError.BadRequestError);
+        }
         if (err.message === 'NotFound') {
           throw new NotFoundException(UserError.NotFoundError);
         }
