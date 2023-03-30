@@ -10,6 +10,7 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
+import { FilesService } from 'src/files/files.service';
 import { UserError } from 'src/common/errors/users/users-errors';
 import { ServerError } from 'src/common/errors/server/server-errors';
 import { handlePagination } from 'src/common/pagination/pagination';
@@ -23,11 +24,13 @@ import {
 import { UpdateUserDto } from './dto/update-user.dto';
 import { valuesSortUsers } from './utils/constants';
 import { DeleteUserDto } from './dto/delete-user.dto';
+import { join } from 'path';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<UserDocument>,
+    private readonly filesService: FilesService,
   ) {}
 
   async hashPassword(password: string): Promise<string | Error> {
@@ -150,9 +153,8 @@ export class UsersService {
     }
 
     if (query.sort) {
-      const sortKey = query.sort.toLocaleLowerCase().replace(/[^a-z]/gi, '');
+      const sortKey = query.sort.replace(/[^a-z]/gi, '');
       const sortValue = query.sort.replace(/[^-]/gi, '') ? -1 : 1;
-
       const exist = valuesSortUsers.some((val) => val === sortKey);
 
       if (!exist) {
@@ -281,6 +283,61 @@ export class UsersService {
       });
 
     return user;
+  }
+
+  async uploadAvatar(
+    id: string,
+    file: Express.Multer.File,
+  ): Promise<ResponseUser | Error> {
+    const path = 'static/users/avatars';
+    const folder = join(__dirname, '..', 'static', 'users', 'avatars');
+    const resFilterImage = await this.filesService.filterImage(file, id);
+    const url = await this.filesService.saveFile(resFilterImage, folder, path);
+    const date = Date.now();
+
+    return await this.userModel
+      .findByIdAndUpdate(
+        id,
+        { avatar: url, updatedAt: date },
+        { new: true, runValidators: true },
+      )
+      .orFail(new Error('NotFound'))
+      .then(
+        (user: User): ResponseUser => ({
+          id: user._id,
+          uuid: user.uuid,
+          username: user.username,
+          email: user.email,
+          name: user.name,
+          surname: user.surname,
+          birthday: user.birthday,
+          avatar: user.avatar,
+          phone: user.phone,
+          nationality: user.nationality,
+          country: user.country,
+          city: user.city,
+          gender: user.gender,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          role: user.role,
+          status: user.status,
+        }),
+      )
+      .catch((err): Error => {
+        if (err.name === 'ValidationError') {
+          throw new BadRequestException(UserError.ValidationError);
+        }
+        if (err.name === 'CastError') {
+          throw new BadRequestException(UserError.BadRequestError);
+        }
+        if (err.message === 'NotFound') {
+          throw new NotFoundException(UserError.NotFoundError);
+        }
+        if (err.name === 'MongoError' || err.code === 11000) {
+          throw new ConflictException(UserError.ConflictError);
+        }
+        throw new InternalServerErrorException(ServerError.InternalServerError);
+      });
   }
 
   async deleteUser(id: string): Promise<string | Error> {

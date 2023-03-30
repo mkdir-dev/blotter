@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import { UsersModule } from 'src/users/users.module';
 import { AppController } from './app.controller';
@@ -28,6 +30,10 @@ import configuration from '../config/configuration';
           uri: `${hostDB}://${userDB}:${passDB}@${uriDB}/${nameDB}`,
         };
       },
+    }),
+
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static'),
     }),
 
     UsersModule,
