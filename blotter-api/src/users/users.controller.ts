@@ -29,7 +29,6 @@ import { DeleteUserDto } from './dto/delete-user.dto';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-  // private readonly filesService: FilesService,
 
   @ApiTags('users')
   @ApiResponse({ status: HttpStatus.CREATED, type: RegisterUserDto })

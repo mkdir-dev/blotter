@@ -5,6 +5,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
 import { UsersModule } from 'src/users/users.module';
+import { FilesModule } from 'src/files/files.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configuration from '../config/configuration';
@@ -37,6 +38,7 @@ import configuration from '../config/configuration';
     }),
 
     UsersModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

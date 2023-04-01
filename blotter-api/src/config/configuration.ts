@@ -1,4 +1,12 @@
-const { PORT, DB_HOST, DB_URI, DB_NAME, DB_USER, DB_PASS } = process.env;
+const {
+  PORT,
+
+  DB_HOST,
+  DB_URI,
+  DB_NAME,
+  DB_USER,
+  DB_PASS,
+} = process.env;
 
 export interface Config {
   port: number;
@@ -11,7 +19,7 @@ export interface Config {
 }
 
 export default (): Config => ({
-  port: parseInt(PORT) || 3000,
+  port: parseInt(PORT) || 8080,
 
   db_host: DB_HOST,
   db_uri: DB_URI,

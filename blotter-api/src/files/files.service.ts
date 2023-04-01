@@ -3,16 +3,31 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { access, mkdir, writeFile } from 'fs/promises';
-import { join } from 'path';
 import * as sharp from 'sharp';
+import { Storage } from '@google-cloud/storage';
 
 import { FileError } from 'src/common/errors/files/files-errors';
 import { ServerError } from 'src/common/errors/server/server-errors';
+import { cloudConfig } from 'src/config/cloud-config';
 import { MFile } from './classes/m-files.class';
 
 @Injectable()
 export class FilesService {
+  private storage: Storage;
+  private bucket: string;
+
+  constructor() {
+    this.storage = new Storage({
+      projectId: cloudConfig.cloud_project_id,
+      credentials: {
+        client_email: cloudConfig.cloud_client_email,
+        private_key: cloudConfig.cloud_private_key,
+      },
+    });
+
+    this.bucket = cloudConfig.cloud_media_bucket;
+  }
+
   async convertToWebP(file: Buffer): Promise<Buffer> {
     return await sharp(file).webp().toBuffer();
   }
@@ -45,19 +60,30 @@ export class FilesService {
     });
   }
 
-  async saveFile(file: MFile, folder: string, path: string): Promise<string> {
-    try {
-      await access(folder);
-    } catch (err) {
-      await mkdir(folder, { recursive: true });
-    }
+  async saveFile(
+    id: string,
+    file: Express.Multer.File,
+    path: string,
+  ): Promise<string> {
+    const { originalname, buffer } = await this.filterImage(file, id);
+    const metadata: { [key: string]: string }[] = [{ id: id }];
+    const object = metadata.reduce((obj, item) => Object.assign(obj, item), {});
+    const fileStorage = this.storage
+      .bucket(this.bucket)
+      .file(`${path}/${originalname}`);
+    const stream = fileStorage.createWriteStream();
 
     try {
-      await writeFile(join(folder, file.originalname), file.buffer);
+      stream.on('finish', async () => {
+        return await fileStorage.setMetadata({
+          metadata: object,
+        });
+      });
+      stream.end(buffer);
     } catch (err) {
-      throw new InternalServerErrorException(ServerError.InternalServerError);
+      throw new InternalServerErrorException(ServerError.SaveFileServerError);
     }
 
-    return `/${path}/${file.originalname}`;
+    return `${cloudConfig.cloud_url}/${this.bucket}/${path}/${originalname}`;
   }
 }

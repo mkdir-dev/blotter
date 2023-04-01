@@ -24,7 +24,6 @@ import {
 import { UpdateUserDto } from './dto/update-user.dto';
 import { valuesSortUsers } from './utils/constants';
 import { DeleteUserDto } from './dto/delete-user.dto';
-import { join } from 'path';
 
 @Injectable()
 export class UsersService {
@@ -289,11 +288,9 @@ export class UsersService {
     id: string,
     file: Express.Multer.File,
   ): Promise<ResponseUser | Error> {
-    const path = 'static/users/avatars';
-    const folder = join(__dirname, '..', 'static', 'users', 'avatars');
-    const resFilterImage = await this.filesService.filterImage(file, id);
-    const url = await this.filesService.saveFile(resFilterImage, folder, path);
     const date = Date.now();
+    const path = 'users/avatars';
+    const url = await this.filesService.saveFile(id, file, path);
 
     return await this.userModel
       .findByIdAndUpdate(

@@ -9,3 +9,9 @@ export class MFile {
     this.originalname = file.originalname;
   }
 }
+
+export class StorageFile {
+  buffer: Buffer;
+  metadata: Map<string, string>;
+  contentType: string;
+}
