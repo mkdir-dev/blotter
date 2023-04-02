@@ -3,29 +3,30 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as sharp from 'sharp';
 import { Storage } from '@google-cloud/storage';
 
-import { FileError } from 'src/common/errors/files/files-errors';
-import { ServerError } from 'src/common/errors/server/server-errors';
-import { cloudConfig } from 'src/config/cloud-config';
+import { ServerError, FileError } from 'src/common/errors/errors';
 import { MFile } from './classes/m-files.class';
 
 @Injectable()
 export class FilesService {
   private storage: Storage;
   private bucket: string;
+  private cloud_url: string;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     this.storage = new Storage({
-      projectId: cloudConfig.cloud_project_id,
+      projectId: this.configService.get<string>('cloud_project_id'),
       credentials: {
-        client_email: cloudConfig.cloud_client_email,
-        private_key: cloudConfig.cloud_private_key,
+        client_email: this.configService.get<string>('cloud_client_email'),
+        private_key: this.configService.get<string>('cloud_private_key'),
       },
     });
 
-    this.bucket = cloudConfig.cloud_media_bucket;
+    this.bucket = this.configService.get<string>('cloud_media_bucket');
+    this.cloud_url = this.configService.get<string>('cloud_url');
   }
 
   async convertToWebP(file: Buffer): Promise<Buffer> {
@@ -71,7 +72,10 @@ export class FilesService {
     const fileStorage = this.storage
       .bucket(this.bucket)
       .file(`${path}/${originalname}`);
-    const stream = fileStorage.createWriteStream();
+    const stream = fileStorage.createWriteStream({
+      resumable: false,
+      gzip: true,
+    });
 
     try {
       stream.on('finish', async () => {
@@ -81,9 +85,9 @@ export class FilesService {
       });
       stream.end(buffer);
     } catch (err) {
-      throw new InternalServerErrorException(ServerError.SaveFileServerError);
+      throw new InternalServerErrorException(ServerError.SaveFileError);
     }
 
-    return `${cloudConfig.cloud_url}/${this.bucket}/${path}/${originalname}`;
+    return `${this.cloud_url}/${this.bucket}/${path}/${originalname}`;
   }
 }

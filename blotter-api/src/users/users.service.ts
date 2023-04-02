@@ -10,10 +10,10 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
-import { FilesService } from 'src/files/files.service';
-import { UserError } from 'src/common/errors/users/users-errors';
-import { ServerError } from 'src/common/errors/server/server-errors';
+import { ServerError, UserError } from 'src/common/errors/errors';
 import { handlePagination } from 'src/common/pagination/pagination';
+import { FilesService } from 'src/files/files.service';
+
 import { User, UserDocument } from './schemas/user.schema';
 import { ResponseUser } from './dto/general-user.dto';
 import { RegisterUserDto } from './dto/create-user.dto';
@@ -41,7 +41,7 @@ export class UsersService {
       });
   }
 
-  async registerUser(data: RegisterUserDto): Promise<ResponseUser | Error> {
+  async createUser(data: RegisterUserDto): Promise<ResponseUser | Error> {
     const hash = await this.hashPassword(data.password);
     const uuid = uuidv4();
     const date = Date.now();
@@ -97,7 +97,7 @@ export class UsersService {
   }
 
   async getUserById(id: string): Promise<ResponseUser | Error> {
-    const user = await this.userModel
+    return await this.userModel
       .findById(id)
       .orFail(new Error('NotFound'))
       .then(
@@ -130,8 +130,6 @@ export class UsersService {
         }
         throw new InternalServerErrorException(ServerError.InternalServerError);
       });
-
-    return user;
   }
 
   async getUsers(
@@ -366,5 +364,11 @@ export class UsersService {
         }
         throw new InternalServerErrorException(ServerError.InternalServerError);
       });
+  }
+
+  async existUserByEmail(email: string): Promise<boolean> {
+    const existUser = await this.userModel.findOne({ email });
+
+    return !!existUser;
   }
 }

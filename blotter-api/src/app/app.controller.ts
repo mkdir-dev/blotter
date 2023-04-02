@@ -1,13 +1,29 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Post, HttpCode, HttpStatus, Body } from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { AppService } from './app.service';
+import { AuthService } from 'src/auth/auth.service';
+import { SignInUserDto } from 'src/auth/dto/signin-auth.dto';
+import { RegisterUserDto } from 'src/users/dto/create-user.dto';
+import { ResponseUser } from 'src/users/dto/general-user.dto';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @ApiTags('auth')
+  @ApiResponse({ status: HttpStatus.CREATED, type: RegisterUserDto })
+  @Post('signup')
+  @HttpCode(HttpStatus.CREATED)
+  async signup(@Body() body: RegisterUserDto): Promise<ResponseUser | Error> {
+    return await this.authService.signUp(body);
+  }
+
+  @ApiTags('auth')
+  @ApiResponse({ status: HttpStatus.OK, type: SignInUserDto })
+  @Post('signin')
+  @HttpCode(HttpStatus.OK)
+  async signin(@Body() body: SignInUserDto) {
+    // : Promise<ResponseUser | Error>
+    await this.authService.signIn(body);
   }
 }

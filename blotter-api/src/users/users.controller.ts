@@ -18,7 +18,6 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { handleUpdateUserRoute } from './middlewares/handleBodyUpdateUser';
 import { FindUserByIdDto, ResponseUser } from './dto/general-user.dto';
-import { RegisterUserDto } from './dto/create-user.dto';
 import {
   GetUsersQueryParamsDto,
   ResponseUsersPagination,
@@ -29,16 +28,6 @@ import { DeleteUserDto } from './dto/delete-user.dto';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @ApiTags('users')
-  @ApiResponse({ status: HttpStatus.CREATED, type: RegisterUserDto })
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  async registerUser(
-    @Body() body: RegisterUserDto,
-  ): Promise<ResponseUser | Error> {
-    return await this.usersService.registerUser(body);
-  }
 
   @ApiTags('users')
   @ApiResponse({ status: HttpStatus.OK })
@@ -80,11 +69,18 @@ export class UsersController {
   @ApiTags('users')
   @ApiResponse({ status: HttpStatus.OK })
   @Post('avatar/:id')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: {
+        files: 1,
+        fileSize: 1024 * 1024,
+      },
+    }),
+  )
   @HttpCode(HttpStatus.OK)
   async uploadAvatar(
     @Param() params: FindUserByIdDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile('file') file: Express.Multer.File,
   ): Promise<ResponseUser | Error> {
     const { id } = params;
 
