@@ -74,6 +74,9 @@ export class User {
 
   @Prop({ default: statusEnum.active, enum: Object.values(statusEnum) })
   status: statusEnum;
+
+  @Prop({ default: null })
+  hashRT: null | string;
 }
 
 export const Userchema = SchemaFactory.createForClass(User);

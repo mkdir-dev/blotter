@@ -24,3 +24,8 @@ export class SignInUserDto {
   @IsEmail({}, { message: EmailValidation.IsEmail })
   readonly email: string;
 }
+
+export class ResponseSignIn {
+  readonly access_token: string;
+  readonly refresh_token: string;
+}

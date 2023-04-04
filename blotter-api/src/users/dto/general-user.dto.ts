@@ -31,3 +31,7 @@ export class ResponseUser {
   readonly role: roleEnum;
   readonly status: statusEnum;
 }
+
+export class ResponseUserAndHash extends ResponseUser {
+  readonly hashRT: null | string;
+}

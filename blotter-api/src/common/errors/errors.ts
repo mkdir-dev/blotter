@@ -11,6 +11,7 @@ export const AuthError: AuthErr = {
   UnauthorizedError: 'Ошибка аутентификации',
   AuthRequired: 'Необходима авторизация',
   UserUnauthError: 'Неверные почта или пароль',
+  TokenInternalServerError: 'Ошибка при создании или проверки токена',
 };
 
 export const UserError: UserErr = {

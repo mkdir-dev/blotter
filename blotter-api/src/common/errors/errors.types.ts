@@ -9,6 +9,7 @@ export interface AuthErr {
   UnauthorizedError: string;
   AuthRequired: string;
   UserUnauthError: string;
+  TokenInternalServerError: string;
 }
 
 export interface UserErr {

@@ -1,6 +1,10 @@
 const {
   PORT,
-  JWT_SECRET_KEY,
+
+  AT_JWT_SECRET_KEY,
+  RT_JWT_SECRET_KEY,
+  AT_JWT_SECRET_KEY_TIMEOUT,
+  RT_JWT_SECRET_KEY_TIMEOUT,
 
   DB_HOST,
   DB_URI,
@@ -17,7 +21,11 @@ const {
 
 export interface Config {
   port: number;
-  jwt_secret_key: string;
+
+  at_jwt_secret_key: string;
+  rt_jwt_secret_key: string;
+  at_jwt_secret_key_timeout: string | number;
+  rt_jwt_secret_key_timeout: string | number;
 
   db_host: string;
   db_uri: string;
@@ -34,14 +42,21 @@ export interface Config {
 
 export default (): Config => ({
   port: parseInt(PORT) || 8080,
-  jwt_secret_key: JWT_SECRET_KEY || 'super-secret-key',
 
+  // jwt config
+  at_jwt_secret_key: AT_JWT_SECRET_KEY || 'super-secret-key',
+  rt_jwt_secret_key: RT_JWT_SECRET_KEY || 'super-secret-key',
+  at_jwt_secret_key_timeout: AT_JWT_SECRET_KEY_TIMEOUT || '1h',
+  rt_jwt_secret_key_timeout: RT_JWT_SECRET_KEY_TIMEOUT || '1d',
+
+  // DB config
   db_host: DB_HOST,
   db_uri: DB_URI,
   db_name: DB_NAME,
   db_user: DB_USER,
   db_pass: DB_PASS,
 
+  // cloud config
   cloud_project_id: CLOUD_PROJECT_ID,
   cloud_private_key: CLOUD_PRIVATE_KEY,
   cloud_client_email: CLOUD_CLIENT_EMAIL,

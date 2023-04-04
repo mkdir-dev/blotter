@@ -15,7 +15,7 @@ import { handlePagination } from 'src/common/pagination/pagination';
 import { FilesService } from 'src/files/files.service';
 
 import { User, UserDocument } from './schemas/user.schema';
-import { ResponseUser } from './dto/general-user.dto';
+import { ResponseUser, ResponseUserAndHash } from './dto/general-user.dto';
 import { RegisterUserDto } from './dto/create-user.dto';
 import {
   GetUsersQueryParamsDto,
@@ -32,7 +32,7 @@ export class UsersService {
     private readonly filesService: FilesService,
   ) {}
 
-  async hashPassword(password: string): Promise<string | Error> {
+  async handleHash(password: string): Promise<string | Error> {
     return await bcrypt
       .hash(password, 16)
       .then((hash): string => hash)
@@ -41,8 +41,8 @@ export class UsersService {
       });
   }
 
-  async createUser(data: RegisterUserDto): Promise<ResponseUser | Error> {
-    const hash = await this.hashPassword(data.password);
+  async createUser(data: RegisterUserDto): Promise<ResponseUser> {
+    const hash = await this.handleHash(data.password);
     const uuid = uuidv4();
     const date = Date.now();
 
@@ -50,7 +50,7 @@ export class UsersService {
       throw new InternalServerErrorException(ServerError.InternalServerError);
     }
 
-    const newCreateUser: ResponseUser | Error = await this.userModel
+    return await this.userModel
       .create({
         uuid,
         username: data.username,
@@ -80,7 +80,7 @@ export class UsersService {
           status: user.status,
         }),
       )
-      .catch((err): Error => {
+      .catch((err) => {
         if (err.name === 'ValidationError') {
           throw new BadRequestException(UserError.ValidationError);
         }
@@ -92,8 +92,6 @@ export class UsersService {
         }
         throw new InternalServerErrorException(ServerError.InternalServerError);
       });
-
-    return newCreateUser;
   }
 
   async getUserById(id: string): Promise<ResponseUser | Error> {
@@ -130,6 +128,20 @@ export class UsersService {
         }
         throw new InternalServerErrorException(ServerError.InternalServerError);
       });
+  }
+
+  async existUserByEmail(email: string): Promise<User> {
+    try {
+      return await this.userModel.findOne({ email });
+    } catch (err) {
+      if (err.name === 'CastError') {
+        throw new BadRequestException(UserError.BadRequestError);
+      }
+      if (err.message === 'NotFound') {
+        throw new NotFoundException(UserError.NotFoundError);
+      }
+      throw new InternalServerErrorException(ServerError.InternalServerError);
+    }
   }
 
   async getUsers(
@@ -235,7 +247,7 @@ export class UsersService {
   }): Promise<ResponseUser | Error> {
     const date = Date.now();
 
-    const user = await this.userModel
+    return await this.userModel
       .findByIdAndUpdate(
         id,
         { ...data, updatedAt: date },
@@ -278,8 +290,49 @@ export class UsersService {
         }
         throw new InternalServerErrorException(ServerError.InternalServerError);
       });
+  }
 
-    return user;
+  async updateRT(id: string, rt: string | null) {
+    const hash = await this.handleHash(rt);
+
+    return await this.userModel
+      .findByIdAndUpdate(
+        id,
+        { hashRT: hash },
+        { new: true, runValidators: true },
+      )
+      .orFail(new Error('NotFound'))
+      .then(
+        (user: User): ResponseUserAndHash => ({
+          id: user._id,
+          uuid: user.uuid,
+          username: user.username,
+          email: user.email,
+          name: user.name,
+          surname: user.surname,
+          birthday: user.birthday,
+          avatar: user.avatar,
+          phone: user.phone,
+          nationality: user.nationality,
+          country: user.country,
+          city: user.city,
+          gender: user.gender,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          role: user.role,
+          status: user.status,
+          hashRT: user.hashRT,
+        }),
+      )
+      .catch((err): Error => {
+        if (err.name === 'CastError') {
+          throw new BadRequestException(UserError.BadRequestError);
+        }
+        if (err.message === 'NotFound') {
+          throw new NotFoundException(UserError.NotFoundError);
+        }
+        throw new InternalServerErrorException(ServerError.InternalServerError);
+      });
   }
 
   async uploadAvatar(
@@ -364,11 +417,5 @@ export class UsersService {
         }
         throw new InternalServerErrorException(ServerError.InternalServerError);
       });
-  }
-
-  async existUserByEmail(email: string): Promise<boolean> {
-    const existUser = await this.userModel.findOne({ email });
-
-    return !!existUser;
   }
 }
