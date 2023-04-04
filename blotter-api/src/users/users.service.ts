@@ -293,7 +293,7 @@ export class UsersService {
   }
 
   async updateRT(id: string, rt: string | null) {
-    const hash = await this.handleHash(rt);
+    const hash = rt === null ? rt : await this.handleHash(rt);
 
     return await this.userModel
       .findByIdAndUpdate(
@@ -325,6 +325,7 @@ export class UsersService {
         }),
       )
       .catch((err): Error => {
+        console.log('err', err);
         if (err.name === 'CastError') {
           throw new BadRequestException(UserError.BadRequestError);
         }

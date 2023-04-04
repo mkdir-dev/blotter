@@ -8,7 +8,7 @@ import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { ResponseUser } from 'src/users/dto/general-user.dto';
 import { ResponseSignIn, SignInUserDto } from './dto/signin-auth.dto';
-import { GetTokensDto } from './dto/get-tokens.dto';
+import { GetTokenDto } from './dto/get-tokens.dto';
 import { JwtPayload } from './types/jwt-payload.type';
 
 @Injectable()
@@ -20,8 +20,7 @@ export class AuthService {
   ) {}
 
   async signUp(data: CreateUserDto): Promise<ResponseUser> {
-    // return await this.userService.createUser(data);
-    const user = await this.userService.createUser(data);
+    return await this.userService.createUser(data);
 
     /*
     const tokens = await this.getTokens({
@@ -30,10 +29,13 @@ export class AuthService {
       email: user.email,
     });
 
-    await this.userService.updateRT(user.id, tokens.refresh_token);
-    */
+    await this.userService.updateRT(user.id, tokens.refresh_token)
+    .catch(() => {
+        throw new UnauthorizedException(AuthError.UnauthorizedError);
+      });;
 
-    return user;
+      return user;
+    */
   }
 
   async signIn(data: SignInUserDto): Promise<ResponseSignIn> {
@@ -54,12 +56,48 @@ export class AuthService {
       email: user.email,
     });
 
-    await this.userService.updateRT(user._id, tokens.refresh_token);
+    await this.userService
+      .updateRT(user._id, tokens.refresh_token)
+      .catch(() => {
+        throw new UnauthorizedException(AuthError.UnauthorizedError);
+      });
 
     return tokens;
   }
 
-  async getTokens(data: GetTokensDto): Promise<ResponseSignIn> {
+  async refreshToken(email: string, rt: string): Promise<ResponseSignIn> {
+    const user = await this.userService.existUserByEmail(email);
+
+    if (!user || !user.hashRT) {
+      throw new UnauthorizedException(AuthError.UnauthorizedError);
+    }
+
+    await bcrypt.compare(rt, user.hashRT).then((matched) => {
+      if (!matched) {
+        throw new UnauthorizedException(AuthError.UnauthorizedError);
+      }
+    });
+
+    const tokens = await this.getTokens({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    });
+
+    await this.userService
+      .updateRT(user._id, tokens.refresh_token)
+      .catch(() => {
+        throw new UnauthorizedException(AuthError.UnauthorizedError);
+      });
+
+    return tokens;
+  }
+
+  async logout(id: string) {
+    return await this.userService.updateRT(id, null);
+  }
+
+  async getTokens(data: GetTokenDto): Promise<ResponseSignIn> {
     const { id, username, email } = data;
     const jwtPayload: JwtPayload = {
       sub: id,

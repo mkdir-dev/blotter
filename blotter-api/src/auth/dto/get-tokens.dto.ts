@@ -1,4 +1,4 @@
-export class GetTokensDto {
+export class GetTokenDto {
   id: string;
   username: string;
   email: string;
