@@ -54,13 +54,11 @@ export class AuthService {
     const user = await this.userService.existUserByEmail(email);
 
     if (!user || !user.hashRT) {
-      console.log('!user || !user.hashRT');
       throw new UnauthorizedException(AuthError.UnauthorizedError);
     }
 
     await bcrypt.compare(rt, user.hashRT).then((matched) => {
       if (!matched) {
-        console.log('!matched');
         throw new UnauthorizedException(AuthError.UnauthorizedError);
       }
     });
@@ -73,8 +71,7 @@ export class AuthService {
 
     await this.userService
       .updateRT(user._id, tokens.refresh_token)
-      .catch((err) => {
-        console.log('!updateRT', err);
+      .catch(() => {
         throw new UnauthorizedException(AuthError.UnauthorizedError);
       });
 
@@ -106,8 +103,7 @@ export class AuthService {
           'rt_jwt_secret_key_timeout',
         ),
       }),
-    ]).catch((err) => {
-      console.log(err);
+    ]).catch(() => {
       throw new UnauthorizedException(AuthError.TokenInternalServerError);
     });
 
