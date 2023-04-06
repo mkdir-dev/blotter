@@ -3,3 +3,7 @@ export interface JwtPayload {
   username: string;
   email: string;
 }
+
+export interface JwtPayloadWithRT extends JwtPayload {
+  refreshToken?: string;
+}

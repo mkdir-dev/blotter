@@ -4,15 +4,17 @@ import {
   HttpCode,
   HttpStatus,
   Body,
-  // Param,
-  Req,
+  // Req,
 } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common/decorators';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from 'src/auth/auth.service';
 import { ResponseSignIn, SignInUserDto } from 'src/auth/dto/signin-auth.dto';
+import { JwtPayloadWithRT } from 'src/auth/types/jwt-payload.type';
+import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
+import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
+import { RefreshTokenGuard } from 'src/common/guards/refresh-token.guard';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { ResponseUser } from 'src/users/dto/general-user.dto'; // FindUserByIdDto
 
@@ -38,27 +40,25 @@ export class AppController {
 
   @ApiTags('auth')
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AccessTokenGuard)
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async logout(@Req() req: Request) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const user = req?.user;
+  async logout(@GetCurrentUser() user: JwtPayloadWithRT) {
+    const id = user.sub;
 
-    return await this.authService.logout(user.sub);
+    return await this.authService.logout(id);
   }
 
   @ApiTags('auth')
   @ApiResponse({ status: HttpStatus.OK })
-  @UseGuards(AuthGuard('jwt-refresh'))
+  @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refresh(@Req() req: Request): Promise<ResponseSignIn> {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const user = req?.user;
+  async refresh(
+    @GetCurrentUser('refreshToken') user: JwtPayloadWithRT,
+  ): Promise<ResponseSignIn> {
+    const { email, refreshToken } = user;
 
-    return await this.authService.refreshToken(user.email, user.refreshToken);
+    return await this.authService.refreshToken(email, refreshToken);
   }
 }

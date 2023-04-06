@@ -325,7 +325,6 @@ export class UsersService {
         }),
       )
       .catch((err): Error => {
-        console.log('err', err);
         if (err.name === 'CastError') {
           throw new BadRequestException(UserError.BadRequestError);
         }
