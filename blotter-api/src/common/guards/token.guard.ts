@@ -1,6 +1,11 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthError } from '../errors/errors';
 
 @Injectable()
 export class TokenGuard extends AuthGuard('jwt') {
@@ -17,5 +22,13 @@ export class TokenGuard extends AuthGuard('jwt') {
     if (isPublic) return true;
 
     return super.canActivate(context);
+  }
+
+  handleRequest(err: Error, user: any) {
+    if (err || !user) {
+      throw new UnauthorizedException(AuthError.UnauthorizedError);
+    }
+
+    return user;
   }
 }

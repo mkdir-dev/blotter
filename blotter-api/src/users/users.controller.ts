@@ -11,10 +11,13 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { Role } from 'src/common/decorators/role.decorator';
+import { AdminRoleGuard } from 'src/common/guards/role.guard';
 import { UsersService } from './users.service';
 import { handleUpdateUserRoute } from './middlewares/handleBodyUpdateUser';
 import { FindUserByIdDto, ResponseUser } from './dto/general-user.dto';
@@ -24,6 +27,29 @@ import {
 } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteUserDto } from './dto/delete-user.dto';
+import { roleEnum } from './enums/role.enum';
+import { AccessCheckUserGuard } from 'src/common/guards/access-check-user.guard';
+
+/*
+import { Role } from 'src/common/decorators/role.decorator';
+import { AdminRoleGuard } from 'src/common/guards/role.guard';
+import { roleEnum } from 'src/users/enums/role.enum';
+
+ @ApiTags('auth')
+  @ApiResponse({ status: HttpStatus.OK })
+  @Public()
+  @Role(roleEnum.admin)
+  @UseGuards(AuthGuard('jwt-refresh'), AdminRoleGuard)
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refresh(
+    @GetCurrentUser('refreshToken') user: JwtPayloadWithRT,
+  ): Promise<ResponseSignIn> {
+    const { email, refreshToken } = user;
+
+    return await this.authService.refreshToken(email, refreshToken);
+  }
+*/
 
 @Controller('users')
 export class UsersController {
@@ -43,6 +69,8 @@ export class UsersController {
 
   @ApiTags('users')
   @ApiResponse({ status: HttpStatus.OK })
+  @Role(roleEnum.admin)
+  @UseGuards(AdminRoleGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   async getUsers(
@@ -53,6 +81,7 @@ export class UsersController {
 
   @ApiTags('users')
   @ApiResponse({ status: HttpStatus.OK })
+  @UseGuards(AccessCheckUserGuard)
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   async updateUser(
@@ -68,6 +97,7 @@ export class UsersController {
 
   @ApiTags('users')
   @ApiResponse({ status: HttpStatus.OK })
+  @UseGuards(AccessCheckUserGuard)
   @Post('avatar/:id')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -89,6 +119,7 @@ export class UsersController {
 
   @ApiTags('users')
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
+  @UseGuards(AccessCheckUserGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param() params: FindUserByIdDto): Promise<string | Error> {
@@ -99,6 +130,8 @@ export class UsersController {
 
   @ApiTags('users')
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
+  @Role(roleEnum.admin)
+  @UseGuards(AdminRoleGuard)
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteManyUsers(@Body() body: DeleteUserDto): Promise<string | Error> {

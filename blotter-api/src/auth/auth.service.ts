@@ -39,6 +39,7 @@ export class AuthService {
       id: user._id,
       username: user.username,
       email: user.email,
+      role: user.role,
     });
 
     await this.userService
@@ -67,6 +68,7 @@ export class AuthService {
       id: user._id,
       username: user.username,
       email: user.email,
+      role: user.role,
     });
 
     await this.userService
@@ -83,12 +85,8 @@ export class AuthService {
   }
 
   async getTokens(data: GetTokenDto): Promise<ResponseSignIn> {
-    const { id, username, email } = data;
-    const jwtPayload: JwtPayload = {
-      sub: id,
-      username,
-      email,
-    };
+    const { id, username, email, role } = data;
+    const jwtPayload: JwtPayload = { sub: id, username, email, role };
 
     const [access_token, refresh_token] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {

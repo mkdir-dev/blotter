@@ -12,6 +12,10 @@ export interface AuthErr {
   TokenInternalServerError: string;
 }
 
+export interface RoleErr {
+  ForbiddenError: string;
+}
+
 export interface UserErr {
   BadRequestError: string;
   ValidationError: string;
