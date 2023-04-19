@@ -25,6 +25,6 @@ description and installation of the application: https://github.com/mkdir-dev/bl
 tech stack:
 
 ![TypeScript](https://img.shields.io/badge/-TypeScript-090909?style=for-the-badge&logo=TypeScript)
-![Next.js](https://img.shields.io/badge/-Next.js-090909?style=for-the-badge&logo=NextJS&logoColor=E0234E)
+![Next.js](https://img.shields.io/badge/-Next.js-090909?style=for-the-badge&logo=Next&logoColor=E0234E)
 
 application by link: - - -
