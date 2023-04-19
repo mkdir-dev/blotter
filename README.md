@@ -1,6 +1,6 @@
 # blotter
 
-1. blotter-api
+1. ### blotter-api
 
 description and installation of the application: https://github.com/mkdir-dev/blotter/blob/main/blotter-api/README.md
 
@@ -18,7 +18,7 @@ application by link: - - -
 
 api documentation: /docs
 
-2. blotter-client
+2. ### blotter-client
 
 description and installation of the application: https://github.com/mkdir-dev/blotter/blob/main/blotter-client/README.md
 
