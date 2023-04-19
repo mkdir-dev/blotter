@@ -13,7 +13,6 @@ import { createEmotionCache } from '@/core/utils/create-emotion-cashe';
 
 const createCache = createEmotionCache();
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const App = (props: AppProps & { emotionCache: EmotionCache }) => {
   const { Component, pageProps, emotionCache = createCache } = props;
 
