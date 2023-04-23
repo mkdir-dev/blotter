@@ -3,10 +3,11 @@ import { memo } from 'react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 
-import { CacheProvider } from '@emotion/react';
-import { type EmotionCache } from '@emotion/cache';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
+
+import { CacheProvider } from '@emotion/react';
+import { type EmotionCache } from '@emotion/cache';
 
 import { theme } from '@/assets/theme/theme';
 import { createEmotionCache } from '@/core/utils/create-emotion-cashe';

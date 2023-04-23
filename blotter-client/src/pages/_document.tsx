@@ -11,7 +11,6 @@ type CustomAppProps = AppProps & {
 };
 
 export default class CustomDocument extends Document {
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   render() {
     return (
       <Html lang="en">
@@ -23,6 +22,9 @@ export default class CustomDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap"
             rel="stylesheet"
           />
+
+          {/* favicon */}
+          <link rel="icon" href="/images/favicon.png" />
         </Head>
         <body>
           <Main />
