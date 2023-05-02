@@ -25,7 +25,10 @@ description and installation of the application: https://github.com/mkdir-dev/bl
 tech stack:
 
 ![TypeScript](https://img.shields.io/badge/-TypeScript-090909?style=for-the-badge&logo=TypeScript)
+![React](https://img.shields.io/badge/-React-090909?style=for-the-badge&logo=React)
 ![Next.js](https://img.shields.io/badge/-Next.js-090909?style=for-the-badge&logo=Next.js)
-![Material UI](https://img.shields.io/badge/-mui-090909?style=for-the-badge&logo=mui)
+![react-query](https://img.shields.io/badge/-react%20query-090909?style=for-the-badge&logo=react%20query)
+![react-hook-form](https://img.shields.io/badge/-react%20hook%20form-090909?style=for-the-badge&logo=react%20hook%20form)
+![Material UI](https://img.shields.io/badge/-Material%20UI-090909?style=for-the-badge&logo=mui)
 
 application by link: - - -
