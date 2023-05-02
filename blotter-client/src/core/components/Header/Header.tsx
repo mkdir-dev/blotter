@@ -3,21 +3,23 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { AppBar, Toolbar, Button, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Button, IconButton, ButtonGroup } from '@mui/material';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
+import { routes } from '@/core/utils/routes';
 import { UserMenu } from '../UserMenu/UserMenu';
-import logo from '../../../assets/images/logo.png';
+import logo from '../../../../public/images/logo.png';
 
 export interface HeaderProps {
   openMenu: boolean;
+  authPage?: boolean;
   handleOpenMenu: () => void;
 }
 
 export const Header = (props: HeaderProps) => {
-  const { openMenu, handleOpenMenu } = props;
+  const { openMenu, authPage, handleOpenMenu } = props;
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -30,21 +32,20 @@ export const Header = (props: HeaderProps) => {
   };
 
   return (
-    <AppBar position={'sticky'}>
+    <AppBar position={'sticky'} sx={{ borderBottomRightRadius: 10, borderBottomLeftRadius: 10 }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <IconButton
-          edge={'start'}
-          color={'inherit'}
-          aria-label={'header menu'}
-          onClick={handleOpenMenu}
-        >
-          {openMenu ? <MenuOpenIcon /> : <MenuIcon />}
-        </IconButton>
+        {!authPage && (
+          <IconButton
+            edge={'start'}
+            color={'inherit'}
+            aria-label={'header menu'}
+            onClick={handleOpenMenu}
+          >
+            {openMenu ? <MenuOpenIcon color={'secondary'} /> : <MenuIcon color={'secondary'} />}
+          </IconButton>
+        )}
 
-        <Link
-          href={'/'}
-          // href={Routes.ForgotPasswordPage()}
-        >
+        <Link href={routes.index.path}>
           <Button
             variant={'text'}
             color={'secondary'}
@@ -54,11 +55,27 @@ export const Header = (props: HeaderProps) => {
           </Button>
         </Link>
 
-        <UserMenu
-          anchor={anchorElUser}
-          handleOpenUserMenu={handleOpenUserMenu}
-          handleCloseUserMenu={handleCloseUserMenu}
-        />
+        {authPage ? (
+          <ButtonGroup sx={{ gap: 2 }}>
+            <Link href={routes.signin.path}>
+              <Button variant={'text'} color={'secondary'}>
+                Sign In
+              </Button>
+            </Link>
+
+            <Link href={routes.signup.path}>
+              <Button variant={'text'} color={'secondary'}>
+                Sign Up
+              </Button>
+            </Link>
+          </ButtonGroup>
+        ) : (
+          <UserMenu
+            anchor={anchorElUser}
+            handleOpenUserMenu={handleOpenUserMenu}
+            handleCloseUserMenu={handleCloseUserMenu}
+          />
+        )}
       </Toolbar>
     </AppBar>
   );

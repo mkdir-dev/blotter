@@ -26,9 +26,12 @@ export class AuthService {
   async signIn(data: SignInUserDto): Promise<ResponseSignIn> {
     const { email, password } = data;
 
-    const user = await this.userService.existUserByEmail(email).catch(() => {
+    const user = await this.userService.existUserByEmail(email);
+
+    if (!user) {
       throw new UnauthorizedException(AuthError.UserUnauthError);
-    });
+    }
+
     const validatePass = await bcrypt.compare(password, user.password);
 
     if (!validatePass) {

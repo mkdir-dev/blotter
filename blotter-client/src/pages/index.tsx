@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { CircularProgress } from '@mui/material';
+// import { CircularProgress } from '@mui/material';
 
 import { Layout } from '@/core/layouts/Layout';
 
@@ -9,7 +9,9 @@ import logo from '../../public/images/blotter-logo.png';
 const Home = () => {
   return (
     <Layout>
-      <CircularProgress />
+      {
+        // <CircularProgress />
+      }
 
       <Image
         src={logo}

@@ -8,12 +8,13 @@ import { Header } from '../components/Header/Header';
 import { Navigation } from '../components/Navigation/Navigation';
 
 export interface LayoutProps {
+  authPage?: boolean;
   title?: string;
   children?: React.ReactNode;
 }
 
 export const Layout = (props: LayoutProps) => {
-  const { title, children } = props;
+  const { authPage, title, children } = props;
 
   const [openMenu, setOpenMenu] = useState(false);
 
@@ -33,12 +34,17 @@ export const Layout = (props: LayoutProps) => {
           flexDirection: 'column',
         }}
       >
-        <Header openMenu={openMenu} handleOpenMenu={handleOpenMenu} />
+        <Header openMenu={openMenu} authPage={authPage} handleOpenMenu={handleOpenMenu} />
 
         <Box component={'main'} display={'flex'} flex={'1 0 auto'}>
-          <Navigation openMenu={openMenu} />
-
-          <Box p={'16px'}>{children}</Box>
+          {authPage ? (
+            <>{children}</>
+          ) : (
+            <>
+              <Navigation openMenu={openMenu} />
+              <Box p={'16px'}>{children}</Box>
+            </>
+          )}
         </Box>
       </Container>
     </>
