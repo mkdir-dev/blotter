@@ -26,5 +26,6 @@ tech stack:
 
 ![TypeScript](https://img.shields.io/badge/-TypeScript-090909?style=for-the-badge&logo=TypeScript)
 ![Next.js](https://img.shields.io/badge/-Next.js-090909?style=for-the-badge&logo=Next.js)
+![Material UI](https://img.shields.io/badge/-mui-090909?style=for-the-badge&logo=mui)
 
 application by link: - - -
