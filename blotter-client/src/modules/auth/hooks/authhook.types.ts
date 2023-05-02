@@ -15,4 +15,6 @@ export interface AuthHook {
 export interface SignInSuccessResponse {
   access_token: string;
   refresh_token: string;
+  accessTokenExpiry: number;
+  refreshTokenExpiry: number;
 }

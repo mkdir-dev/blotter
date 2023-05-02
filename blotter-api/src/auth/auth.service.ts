@@ -91,23 +91,33 @@ export class AuthService {
     const { id, username, email, role } = data;
     const jwtPayload: JwtPayload = { sub: id, username, email, role };
 
+    const expiresIn_at_jwt = this.configService.get<string | number>(
+      'at_jwt_secret_key_timeout',
+    );
+    const expiresIn_rt_jwt = this.configService.get<string | number>(
+      'rt_jwt_secret_key_timeout',
+    );
+    const accessTokenExpiry = Date.now() + Number(expiresIn_at_jwt) - 300000;
+    const refreshTokenExpiry = Date.now() + Number(expiresIn_rt_jwt) - 600000;
+
     const [access_token, refresh_token] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.configService.get<string>('at_jwt_secret_key'),
-        expiresIn: this.configService.get<string | number>(
-          'at_jwt_secret_key_timeout',
-        ),
+        expiresIn: expiresIn_at_jwt,
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.configService.get<string>('rt_jwt_secret_key'),
-        expiresIn: this.configService.get<string | number>(
-          'rt_jwt_secret_key_timeout',
-        ),
+        expiresIn: expiresIn_rt_jwt,
       }),
     ]).catch(() => {
       throw new UnauthorizedException(AuthError.TokenInternalServerError);
     });
 
-    return { access_token, refresh_token };
+    return {
+      access_token,
+      refresh_token,
+      accessTokenExpiry,
+      refreshTokenExpiry,
+    };
   }
 }

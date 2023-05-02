@@ -46,8 +46,8 @@ export default (): Config => ({
   // jwt config
   at_jwt_secret_key: AT_JWT_SECRET_KEY ?? 'super-secret-key',
   rt_jwt_secret_key: RT_JWT_SECRET_KEY ?? 'super-secret-key',
-  at_jwt_secret_key_timeout: AT_JWT_SECRET_KEY_TIMEOUT ?? '1h',
-  rt_jwt_secret_key_timeout: RT_JWT_SECRET_KEY_TIMEOUT ?? '1d',
+  at_jwt_secret_key_timeout: AT_JWT_SECRET_KEY_TIMEOUT ?? 3600, // 3600 = 1h
+  rt_jwt_secret_key_timeout: RT_JWT_SECRET_KEY_TIMEOUT ?? 86400, // 86400 = 24h
 
   // DB config
   db_host: DB_HOST,

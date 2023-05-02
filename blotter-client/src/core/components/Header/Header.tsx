@@ -32,7 +32,7 @@ export const Header = (props: HeaderProps) => {
   };
 
   return (
-    <AppBar position={'sticky'} sx={{ borderBottomRightRadius: 10, borderBottomLeftRadius: 10 }}>
+    <AppBar position={'sticky'}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         {!authPage && (
           <IconButton

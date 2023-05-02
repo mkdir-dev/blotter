@@ -28,4 +28,6 @@ export class SignInUserDto {
 export class ResponseSignIn {
   readonly access_token: string;
   readonly refresh_token: string;
+  readonly accessTokenExpiry: number;
+  readonly refreshTokenExpiry: number;
 }
