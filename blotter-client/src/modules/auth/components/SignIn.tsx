@@ -25,8 +25,6 @@ export const Signin = () => {
   const { data: session, status } = useSession();
   const { enqueueSnackbar } = useSnackbar();
 
-  console.log('session', session);
-
   const { isLoadingAuth, isErrorAuth, handleUseAuth } = useSignIn({
     onSuccess: async () => {
       enqueueSnackbar('Вход успешно выполнен', { variant: 'success' });

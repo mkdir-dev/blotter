@@ -93,6 +93,8 @@ export const options: NextAuthOptions = {
         session.user.name = token.name;
         // @ts-ignore
         session.user.role = token.role;
+        // @ts-ignore
+        session.user.accessTokenExpiry = token.accessTokenExpiry;
       }
 
       return await Promise.resolve(session);

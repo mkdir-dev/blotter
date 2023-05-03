@@ -1,4 +1,3 @@
-// import { GetServerSideProps } from 'next';
 import { useSession } from 'next-auth/react';
 
 import { Layout } from '@/core/layouts/Layout';
