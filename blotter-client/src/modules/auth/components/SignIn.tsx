@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 
 import { Box, Paper, Stack } from '@mui/material';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+
+// import jwt_decode from 'jwt-decode';
 
 import { useSnackbar } from 'notistack';
 
@@ -15,17 +19,21 @@ import { formFieldsAuth } from '../utils/auth.constants';
 import logo from '../../../../public/images/logo.png';
 
 import { useSignIn } from '../hooks/use-signin';
-import { useState } from 'react';
 
 export const Signin = () => {
   const [textErr, setTextErr] = useState<string | null>(null);
+  const { data: session, status } = useSession();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { isLoadingAuth, isErrorAuth, handleUseAuth } = useSignIn({
-    onSuccess: (val) => {
-      console.log('val', val);
+  console.log('session', session);
 
+  const { isLoadingAuth, isErrorAuth, handleUseAuth } = useSignIn({
+    onSuccess: async () => {
       enqueueSnackbar('Вход успешно выполнен', { variant: 'success' });
+
+      if (session?.user?.name)
+        enqueueSnackbar(`Добро пожаловать, ${session.user.name}`, { variant: 'info' });
+
       setTextErr(null);
     },
     onError: async (err: Response) => {
@@ -67,12 +75,16 @@ export const Signin = () => {
           defaultValues={{ email: '', password: '' }}
           resolver={zodResolver(validationAuth)}
           submitText={'Sign in'}
-          isLoading={isLoadingAuth}
+          isLoading={isLoadingAuth || status === 'loading'}
           isError={isErrorAuth}
           textError={textErr}
         >
           {formFieldsAuth.map((field) => (
-            <ControlledInput key={field.name} disabled={isLoadingAuth} {...field} />
+            <ControlledInput
+              key={field.name}
+              disabled={isLoadingAuth || status === 'loading'}
+              {...field}
+            />
           ))}
         </Form>
       </Paper>

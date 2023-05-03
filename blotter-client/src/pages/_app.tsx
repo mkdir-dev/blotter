@@ -1,6 +1,7 @@
 import { memo } from 'react';
 
 import type { AppProps } from 'next/app';
+import { SessionProvider } from 'next-auth/react';
 import Head from 'next/head';
 
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -22,6 +23,8 @@ const createCache = createEmotionCache();
 const App = (props: AppProps & { emotionCache: EmotionCache }) => {
   const { Component, pageProps, emotionCache = createCache } = props;
 
+  console.log('pageProps', pageProps);
+
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -32,20 +35,25 @@ const App = (props: AppProps & { emotionCache: EmotionCache }) => {
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
 
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          <SnackbarProvider
-            maxSnack={5}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
-            }}
-          >
-            <CssBaseline />
-            <Component {...pageProps} />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
+      <SessionProvider
+        session={pageProps.session}
+        //refetchInterval={interval}
+      >
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider theme={theme}>
+            <SnackbarProvider
+              maxSnack={5}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+            >
+              <CssBaseline />
+              <Component {...pageProps} />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </SessionProvider>
     </CacheProvider>
   );
 };
