@@ -1,20 +1,12 @@
-import { useSession } from 'next-auth/react';
+import { GetServerSideProps } from 'next';
+import { getSession } from 'next-auth/react';
 
-import { Layout } from '@/core/layouts/Layout';
-import { routes } from '@/core/utils/routes';
+export { default } from './SignInPage';
 
-import { Signin } from '@/modules/auth/components/SignIn';
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
 
-const SignInPage = () => {
-  const session = useSession();
+  if (!!session?.user) return { notFound: true };
 
-  console.log('session', session);
-
-  return (
-    <Layout authPage title={routes.signin.title}>
-      <Signin />
-    </Layout>
-  );
+  return { props: {} };
 };
-
-export default SignInPage;

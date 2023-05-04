@@ -3,21 +3,30 @@ import { signIn as NextSignIn } from 'next-auth/react';
 
 import { AuthParams } from '../utils/auth.validation';
 import { AuthHook, AuthHookArgs } from './authhook.types';
+import { signin } from '@/pages/api/auth/signin';
 
 export const useSignIn = ({ onSuccess, onError }: AuthHookArgs): AuthHook => {
   const { isLoading, error, mutate } = useMutation(
     async (values: AuthParams) => {
-      const signInResponse = await NextSignIn('credentials', {
-        email: values.email,
-        password: values.password,
-        redirect: false,
-      });
+      const res = await signin(values);
 
-      if (signInResponse?.error) {
-        return Promise.reject(signInResponse);
+      if (res.ok) {
+        // const result: TokensResponse = await res.json();
+
+        const signInResponse = await NextSignIn('credentials', {
+          email: values.email,
+          password: values.password,
+          redirect: false,
+        });
+
+        if (signInResponse?.error) {
+          return await Promise.reject(signInResponse);
+        }
+
+        return signInResponse;
       }
 
-      return signInResponse;
+      return await Promise.reject(res);
     },
     {
       onSuccess,

@@ -11,8 +11,6 @@ const RefreshTokenHandler = (props: { setInterval: (arg0: number) => void }) => 
         (session.user.accessTokenExpiry - 30 * 60 * 1000 - Date.now()) / 1000
       );
 
-      console.log('timeRemaining', timeRemaining);
-
       props.setInterval(timeRemaining > 0 ? timeRemaining : 0);
     }
   }, [session]);

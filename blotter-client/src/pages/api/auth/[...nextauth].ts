@@ -38,10 +38,10 @@ const providers = [
       const user = await response.json();
 
       if (response.ok && user) {
-        return { ...user, ...credentials };
+        return await Promise.resolve(user);
       }
 
-      return null;
+      return await Promise.reject(user);
     },
   }),
 ];
@@ -65,6 +65,7 @@ export const options: NextAuthOptions = {
         token.name = token_decode.username;
         token.sub = token_decode.sub;
         token.role = token_decode.role;
+        token.email = token_decode.email;
       }
 
       // If the token is still valid, just return it.
@@ -76,7 +77,7 @@ export const options: NextAuthOptions = {
       token = await refreshToken(token.refresh_token);
 
       // @ts-ignore
-      const refresh_token_decode = (await jwt_decode(token.access_token)) as JwtPayloadResponse;
+      const refresh_token_decode = (await jwt_decode(newToken.access_token)) as JwtPayloadResponse;
 
       token.name = refresh_token_decode.username;
       token.sub = refresh_token_decode.sub;
@@ -93,8 +94,6 @@ export const options: NextAuthOptions = {
         session.user.name = token.name;
         // @ts-ignore
         session.user.role = token.role;
-        // @ts-ignore
-        session.user.accessTokenExpiry = token.accessTokenExpiry;
       }
 
       return await Promise.resolve(session);

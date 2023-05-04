@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 
 import { Box, Paper, Stack } from '@mui/material';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 
-// import jwt_decode from 'jwt-decode';
-
 import { useSnackbar } from 'notistack';
 
+import { routes } from '@/core/utils/routes';
 import { Form } from '@/common/form/Form';
 import { ControlledInput } from '@/common/form/ControlledInput';
 import { ErrorResponse } from '@/common/types/api.types';
@@ -22,6 +22,7 @@ import { useSignIn } from '../hooks/use-signin';
 
 export const Signin = () => {
   const [textErr, setTextErr] = useState<string | null>(null);
+  const router = useRouter();
   const { data: session, status } = useSession();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -33,11 +34,13 @@ export const Signin = () => {
         enqueueSnackbar(`Добро пожаловать, ${session.user.name}`, { variant: 'info' });
 
       setTextErr(null);
+
+      router.push(routes.index.path);
     },
     onError: async (err: Response) => {
       const error: ErrorResponse = await err.json();
 
-      if (Array.isArray(error.message)) {
+      if (!!error.message && Array.isArray(error.message)) {
         // @ts-ignore
         setTextErr(error.message[0]);
 
@@ -45,7 +48,7 @@ export const Signin = () => {
         error.message?.forEach((element) => {
           enqueueSnackbar(element, { variant: 'warning' });
         });
-      } else {
+      } else if (!!error.message) {
         // @ts-ignore
         setTextErr(error.message);
         enqueueSnackbar(error.message, { variant: 'error' });

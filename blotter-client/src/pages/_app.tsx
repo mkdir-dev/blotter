@@ -28,7 +28,7 @@ const App = (props: AppProps & { emotionCache: EmotionCache }) => {
 
   // console.log('pageProps', pageProps);
 
-  console.log('interval', interval);
+  // console.log('interval', interval);
 
   return (
     <CacheProvider value={emotionCache}>

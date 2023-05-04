@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 import { AppBar, Toolbar, Button, IconButton, ButtonGroup } from '@mui/material';
 
@@ -20,7 +21,7 @@ export interface HeaderProps {
 
 export const Header = (props: HeaderProps) => {
   const { openMenu, authPage, handleOpenMenu } = props;
-
+  const { status } = useSession();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -55,7 +56,13 @@ export const Header = (props: HeaderProps) => {
           </Button>
         </Link>
 
-        {authPage ? (
+        {status === 'authenticated' ? (
+          <UserMenu
+            anchor={anchorElUser}
+            handleOpenUserMenu={handleOpenUserMenu}
+            handleCloseUserMenu={handleCloseUserMenu}
+          />
+        ) : (
           <ButtonGroup sx={{ gap: 2 }}>
             <Link href={routes.signin.path}>
               <Button variant={'text'} color={'secondary'}>
@@ -69,12 +76,6 @@ export const Header = (props: HeaderProps) => {
               </Button>
             </Link>
           </ButtonGroup>
-        ) : (
-          <UserMenu
-            anchor={anchorElUser}
-            handleOpenUserMenu={handleOpenUserMenu}
-            handleCloseUserMenu={handleCloseUserMenu}
-          />
         )}
       </Toolbar>
     </AppBar>
