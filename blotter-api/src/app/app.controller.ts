@@ -9,7 +9,7 @@ import { JwtPayloadWithRT } from 'src/auth/types/jwt-payload.type';
 import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
-import { ResponseUser } from 'src/users/dto/general-user.dto';
+import { ResponseRegisterUser } from 'src/users/dto/general-user.dto';
 
 @Controller()
 export class AppController {
@@ -20,7 +20,9 @@ export class AppController {
   @Public()
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
-  async signup(@Body() body: RegisterUserDto): Promise<ResponseUser | Error> {
+  async signup(
+    @Body() body: RegisterUserDto,
+  ): Promise<ResponseRegisterUser | Error> {
     return await this.authService.signUp(body);
   }
 

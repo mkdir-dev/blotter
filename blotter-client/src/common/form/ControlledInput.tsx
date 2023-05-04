@@ -8,7 +8,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { ControlledInputProps } from './form.types';
 
 export const ControlledInput = <T extends FieldValues>(props: ControlledInputProps<T>) => {
-  const { name, label, control, error, type, rules, InputProps, ...rest } = props;
+  const { name, label, control, error, type, rules, InputProps, disabled, ...rest } = props;
 
   const [hidden, setHidden] = useState(false);
 
@@ -35,7 +35,12 @@ export const ControlledInput = <T extends FieldValues>(props: ControlledInputPro
               '& .MuiFormHelperText-root': { position: 'absolute', top: 55 },
             }}
             label={label}
-            type={type === 'password' && !hidden ? 'password' : 'text'}
+            type={
+              (type === 'password' && !hidden) || (type === 'password' && disabled)
+                ? 'password'
+                : 'text'
+            }
+            disabled={disabled}
             InputProps={{
               endAdornment:
                 type === 'password' ? (
@@ -45,6 +50,7 @@ export const ControlledInput = <T extends FieldValues>(props: ControlledInputPro
                       onClick={handleClickShowPassword}
                       onMouseDown={handleMouseDownPassword}
                       edge="end"
+                      disabled={disabled}
                     >
                       {hidden ? <VisibilityIcon /> : <VisibilityOffIcon />}
                     </IconButton>

@@ -9,24 +9,23 @@ import { routes } from '@/core/utils/routes';
 import { Form } from '@/common/form/Form';
 import { ControlledInput } from '@/common/form/ControlledInput';
 import { ErrorResponse } from '@/common/types/api.types';
+import { SignUpParams, validationSignUp } from '@/modules/auth/utils/auth.validation';
 
-import { SignInParams, validationSignIn } from '../utils/auth.validation';
-import { formFieldsSignIn } from '../utils/auth.constants';
+import { formFieldsSignUp } from '../utils/auth.constants';
+import { useSignUp } from '../hooks/use-signup';
 
-import { useSignIn } from '../hooks/use-signin';
-
-export const Signin = () => {
+export const SignUp = () => {
   const [textErr, setTextErr] = useState<string | null>(null);
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { isLoadingSignIn, isErrorSignIn, handleUseSignIn } = useSignIn({
-    onSuccess: () => {
-      enqueueSnackbar('Вход успешно выполнен', { variant: 'success' });
+  const { isLoadingSignUp, isErrorSignUp, handleUseSignUp } = useSignUp({
+    onSuccess: async (res) => {
+      enqueueSnackbar(`Пользователь ${res.username} успешно создан`, { variant: 'success' });
 
       setTextErr(null);
 
-      router.push(routes.index.path);
+      router.push(routes.signin.path);
     },
     onError: async (err) => {
       const error: ErrorResponse = await err.json();
@@ -47,16 +46,16 @@ export const Signin = () => {
   return (
     <Form
       rowGap={3}
-      onSubmit={async (data: SignInParams) => handleUseSignIn(data)}
-      defaultValues={{ email: '', password: '' }}
-      resolver={zodResolver(validationSignIn)}
-      submitText={'Sign in'}
-      isLoading={isLoadingSignIn}
-      isError={isErrorSignIn}
+      onSubmit={async (data: SignUpParams) => handleUseSignUp(data)}
+      defaultValues={{ email: '', username: '', password: '' }}
+      resolver={zodResolver(validationSignUp)}
+      submitText={'Sign up'}
+      isLoading={isLoadingSignUp}
+      isError={isErrorSignUp}
       textError={textErr}
     >
-      {formFieldsSignIn.map((field) => (
-        <ControlledInput key={field.name} disabled={isLoadingSignIn} {...field} />
+      {formFieldsSignUp.map((field) => (
+        <ControlledInput key={field.name} disabled={isLoadingSignUp} {...field} />
       ))}
     </Form>
   );

@@ -26,10 +26,6 @@ const App = (props: AppProps & { emotionCache: EmotionCache }) => {
 
   const [interval, setInterval] = useState(0);
 
-  // console.log('pageProps', pageProps);
-
-  // console.log('interval', interval);
-
   return (
     <CacheProvider value={emotionCache}>
       <Head>

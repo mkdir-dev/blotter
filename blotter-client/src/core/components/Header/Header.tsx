@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -21,6 +22,7 @@ export interface HeaderProps {
 
 export const Header = (props: HeaderProps) => {
   const { openMenu, authPage, handleOpenMenu } = props;
+  const router = useRouter();
   const { status } = useSession();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -64,17 +66,21 @@ export const Header = (props: HeaderProps) => {
           />
         ) : (
           <ButtonGroup sx={{ gap: 2 }}>
-            <Link href={routes.signin.path}>
-              <Button variant={'text'} color={'secondary'}>
-                Sign In
-              </Button>
-            </Link>
+            {router.pathname !== routes.signin.path && (
+              <Link href={routes.signin.path}>
+                <Button variant={'text'} color={'secondary'}>
+                  Sign In
+                </Button>
+              </Link>
+            )}
 
-            <Link href={routes.signup.path}>
-              <Button variant={'text'} color={'secondary'}>
-                Sign Up
-              </Button>
-            </Link>
+            {router.pathname !== routes.signup.path && (
+              <Link href={routes.signup.path}>
+                <Button variant={'outlined'} color={'secondary'}>
+                  Sign Up
+                </Button>
+              </Link>
+            )}
           </ButtonGroup>
         )}
       </Toolbar>

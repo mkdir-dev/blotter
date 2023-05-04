@@ -2,16 +2,16 @@ import { Layout } from '@/core/layouts/Layout';
 import { routes } from '@/core/utils/routes';
 
 import { Auth } from '@/modules/auth/components/Auth';
-import { Signin } from '@/modules/auth/components/SignIn';
+import { SignUp } from '@/modules/auth/components/SignUp';
 
-export const SignInPage = () => {
+export const SignUpPage = () => {
   return (
-    <Layout authPage title={routes.signin.title}>
+    <Layout authPage title={routes.signup.title}>
       <Auth>
-        <Signin />
+        <SignUp />
       </Auth>
     </Layout>
   );
 };
 
-export default SignInPage;
+export default SignUpPage;

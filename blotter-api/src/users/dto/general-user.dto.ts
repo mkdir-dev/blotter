@@ -12,6 +12,14 @@ export class FindUserByIdDto {
   readonly id: string;
 }
 
+export class ResponseRegisterUser {
+  readonly id: string;
+  readonly uuid: string;
+  readonly username: string;
+  readonly email: string;
+  readonly role: roleEnum;
+}
+
 export class ResponseUser {
   readonly id: string;
   readonly uuid: string;

@@ -15,7 +15,11 @@ import { handlePagination } from 'src/common/pagination/pagination';
 import { FilesService } from 'src/files/files.service';
 
 import { User, UserDocument } from './schemas/user.schema';
-import { ResponseUser, ResponseUserAndHash } from './dto/general-user.dto';
+import {
+  ResponseRegisterUser,
+  ResponseUser,
+  ResponseUserAndHash,
+} from './dto/general-user.dto';
 import { RegisterUserDto } from './dto/create-user.dto';
 import {
   GetUsersQueryParamsDto,
@@ -41,7 +45,7 @@ export class UsersService {
       });
   }
 
-  async createUser(data: RegisterUserDto): Promise<ResponseUser> {
+  async createUser(data: RegisterUserDto): Promise<ResponseRegisterUser> {
     const hash = await this.handleHash(data.password);
     const uuid = uuidv4();
     const date = Date.now();
@@ -60,24 +64,12 @@ export class UsersService {
         updatedAt: date,
       })
       .then(
-        (user: User): ResponseUser => ({
+        (user: User): ResponseRegisterUser => ({
           id: user._id,
           uuid: user.uuid,
           username: user.username,
           email: user.email,
-          name: user.name,
-          surname: user.surname,
-          birthday: user.birthday,
-          avatar: user.avatar,
-          phone: user.phone,
-          nationality: user.nationality,
-          country: user.country,
-          city: user.city,
-          gender: user.gender,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
           role: user.role,
-          status: user.status,
         }),
       )
       .catch((err) => {

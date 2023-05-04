@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthError } from 'src/common/errors/errors';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { ResponseUser } from 'src/users/dto/general-user.dto';
+import { ResponseRegisterUser } from 'src/users/dto/general-user.dto';
 import { ResponseSignIn, SignInUserDto } from './dto/signin-auth.dto';
 import { GetTokenDto } from './dto/get-tokens.dto';
 import { JwtPayload } from './types/jwt-payload.type';
@@ -19,7 +19,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async signUp(data: CreateUserDto): Promise<ResponseUser> {
+  async signUp(data: CreateUserDto): Promise<ResponseRegisterUser> {
     return await this.userService.createUser(data);
   }
 
