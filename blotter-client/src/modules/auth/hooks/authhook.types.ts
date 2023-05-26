@@ -3,8 +3,8 @@ import { JwtPayload } from 'jwt-decode';
 
 import { SignInParams, SignUpParams } from '../utils/auth.validation';
 
-export interface SignInHookArgs {
-  onSuccess: () => void; //  (value: TokensResponse) => void;
+export interface AuthHookArgs {
+  onSuccess: () => void;
   onError: (err: Response) => void;
 }
 
@@ -23,6 +23,12 @@ export interface SignUpHook {
   handleUseSignUp: UseMutateFunction<any, unknown, SignUpParams, unknown>;
   isLoadingSignUp: boolean;
   isErrorSignUp: boolean;
+}
+
+export interface LogoutHook {
+  handleUseLogout: UseMutateFunction<any, unknown, string, unknown>;
+  isLoadingLogout: boolean;
+  isErrorLogout: boolean;
 }
 
 export interface TokensResponse {

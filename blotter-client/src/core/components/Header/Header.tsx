@@ -5,25 +5,28 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
-import { AppBar, Toolbar, Button, IconButton, ButtonGroup } from '@mui/material';
+import { AppBar, Toolbar, Button, IconButton, ButtonGroup, useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
 import { routes } from '@/core/utils/routes';
+
 import { UserMenu } from '../UserMenu/UserMenu';
 import logo from '../../../../public/images/logo.png';
 
 export interface HeaderProps {
   openMenu: boolean;
-  authPage?: boolean;
   handleOpenMenu: () => void;
 }
 
 export const Header = (props: HeaderProps) => {
-  const { openMenu, authPage, handleOpenMenu } = props;
+  const { openMenu, handleOpenMenu } = props;
   const router = useRouter();
   const { status } = useSession();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -37,7 +40,7 @@ export const Header = (props: HeaderProps) => {
   return (
     <AppBar position={'sticky'}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        {!authPage && (
+        {status === 'authenticated' && (
           <IconButton
             edge={'start'}
             color={'inherit'}
@@ -49,13 +52,19 @@ export const Header = (props: HeaderProps) => {
         )}
 
         <Link href={routes.index.path}>
-          <Button
-            variant={'text'}
-            color={'secondary'}
-            startIcon={<Image src={logo} alt={'logo'} width={32} height={32} />}
-          >
-            Blotter
-          </Button>
+          {matches ? (
+            <Button
+              variant={'text'}
+              color={'secondary'}
+              startIcon={<Image src={logo} alt={'logo'} width={32} height={32} />}
+            >
+              Blotter
+            </Button>
+          ) : (
+            <IconButton>
+              <Image src={logo} alt={'logo'} width={32} height={32} />
+            </IconButton>
+          )}
         </Link>
 
         {status === 'authenticated' ? (

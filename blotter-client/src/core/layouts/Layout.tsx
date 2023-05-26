@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import Head from 'next/head';
+import { useSession } from 'next-auth/react';
 
 import { Container, Box } from '@mui/material';
 
@@ -8,14 +9,14 @@ import { Header } from '../components/Header/Header';
 import { Navigation } from '../components/Navigation/Navigation';
 
 export interface LayoutProps {
-  authPage?: boolean;
   title?: string;
   children?: React.ReactNode;
 }
 
 export const Layout = (props: LayoutProps) => {
-  const { authPage, title, children } = props;
+  const { title, children } = props;
 
+  const { status } = useSession();
   const [openMenu, setOpenMenu] = useState(false);
 
   const handleOpenMenu = () => setOpenMenu(!openMenu);
@@ -32,13 +33,18 @@ export const Layout = (props: LayoutProps) => {
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
+          px: {
+            xs: 0,
+          },
         }}
       >
-        <Header openMenu={openMenu} authPage={authPage} handleOpenMenu={handleOpenMenu} />
+        <Header openMenu={openMenu} handleOpenMenu={handleOpenMenu} />
 
         <Box component={'main'} display={'flex'} flex={'1 0 auto'}>
-          {authPage ? (
-            <>{children}</>
+          {status !== 'authenticated' ? (
+            <Box width={'100%'} p={'16px'}>
+              {children}
+            </Box>
           ) : (
             <>
               <Navigation openMenu={openMenu} />

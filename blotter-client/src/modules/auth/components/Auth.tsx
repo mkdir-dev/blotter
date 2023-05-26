@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import { Box, Paper, Stack, Typography, Link as MuiLink } from '@mui/material';
+import { Box, Paper, Stack, Typography, Link as MuiLink, Button } from '@mui/material';
 
 import { routes } from '@/core/utils/routes';
 import logo from '../../../../public/images/logo.png';
@@ -24,8 +24,19 @@ export const Auth = (props: AuthProps) => {
       display={'flex'}
       flexDirection={'column'}
       justifyContent={'center'}
+      alignItems={'center'}
     >
-      <Paper elevation={6} sx={{ width: '100%', px: 2, py: 4, borderRadius: 4 }}>
+      <Paper
+        elevation={6}
+        sx={{
+          width: '100%',
+          maxWidth: '420px',
+          m: 2,
+          px: 2,
+          py: 4,
+          borderRadius: 4,
+        }}
+      >
         <Stack alignItems={'center'} pb={4}>
           <Image src={logo} alt={'Logo'} width={50} height={50} />
         </Stack>
@@ -34,21 +45,25 @@ export const Auth = (props: AuthProps) => {
 
         <Box mt={1}>
           {router.pathname === routes.signin.path && (
-            <Typography variant={'body2'} textAlign={'center'}>
-              Нет аккаунта?
+            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} gap={1}>
+              <Typography variant={'body2'} textAlign={'center'}>
+                Нет аккаунта?
+              </Typography>
               <Link href={routes.signup.path}>
-                <MuiLink mx={1}>Регистрация</MuiLink>
+                <Button variant="text">Зарегистрироваться</Button>
               </Link>
-            </Typography>
+            </Box>
           )}
 
           {router.pathname === routes.signup.path && (
-            <Typography variant={'body2'} textAlign={'center'}>
-              Eсть аккаунт?
+            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} gap={1}>
+              <Typography variant={'body2'} textAlign={'center'}>
+                Eсть аккаунт?
+              </Typography>
               <Link href={routes.signin.path}>
-                <MuiLink mx={1}>Вход</MuiLink>
+                <Button variant="text">Войти</Button>
               </Link>
-            </Typography>
+            </Box>
           )}
         </Box>
       </Paper>

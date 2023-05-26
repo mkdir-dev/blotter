@@ -2,10 +2,10 @@ import { useMutation } from 'react-query';
 import { signIn as NextSignIn } from 'next-auth/react';
 
 import { SignInParams } from '../utils/auth.validation';
-import { SignInHook, SignInHookArgs } from './authhook.types';
+import { SignInHook, AuthHookArgs } from './authhook.types';
 import { signin } from '@/pages/api/auth/signin';
 
-export const useSignIn = ({ onSuccess, onError }: SignInHookArgs): SignInHook => {
+export const useSignIn = ({ onSuccess, onError }: AuthHookArgs): SignInHook => {
   const { isLoading, error, mutate } = useMutation(
     async (values: SignInParams) => {
       const res = await signin(values);
