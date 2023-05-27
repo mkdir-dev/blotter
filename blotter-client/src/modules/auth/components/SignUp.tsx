@@ -49,7 +49,7 @@ export const SignUp = () => {
       onSubmit={async (data: SignUpParams) => handleUseSignUp(data)}
       defaultValues={{ email: '', username: '', password: '' }}
       resolver={zodResolver(validationSignUp)}
-      submitText={'Sign up'}
+      submitText={'Регистрация'}
       isLoading={isLoadingSignUp}
       isError={isErrorSignUp}
       textError={textErr}

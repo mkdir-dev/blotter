@@ -78,7 +78,7 @@ export const Header = (props: HeaderProps) => {
             {router.pathname !== routes.signin.path && (
               <Link href={routes.signin.path}>
                 <Button variant={'text'} color={'secondary'}>
-                  Sign In
+                  Вход
                 </Button>
               </Link>
             )}
@@ -86,7 +86,7 @@ export const Header = (props: HeaderProps) => {
             {router.pathname !== routes.signup.path && (
               <Link href={routes.signup.path}>
                 <Button variant={'outlined'} color={'secondary'}>
-                  Sign Up
+                  Регистрация
                 </Button>
               </Link>
             )}

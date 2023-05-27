@@ -95,7 +95,7 @@ export const UserMenu = (props: UserMenuProps) => {
           <ListItemIcon>
             <LogoutIcon />
           </ListItemIcon>
-          <ListItemText>Logout</ListItemText>
+          <ListItemText>Выйти</ListItemText>
         </MenuItem>
       </Menu>
     </Box>

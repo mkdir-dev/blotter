@@ -50,7 +50,7 @@ export const Signin = () => {
       onSubmit={async (data: SignInParams) => handleUseSignIn(data)}
       defaultValues={{ email: '', password: '' }}
       resolver={zodResolver(validationSignIn)}
-      submitText={'Sign in'}
+      submitText={'Войти'}
       isLoading={isLoadingSignIn}
       isError={isErrorSignIn}
       textError={textErr}

@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import { Box, Paper, Stack, Typography, Link as MuiLink, Button } from '@mui/material';
+import { Box, Paper, Stack, Typography, Button } from '@mui/material';
 
 import { routes } from '@/core/utils/routes';
 import logo from '../../../../public/images/logo.png';
