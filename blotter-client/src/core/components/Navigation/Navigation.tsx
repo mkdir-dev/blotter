@@ -1,3 +1,6 @@
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+
 import {
   Collapse,
   Drawer,
@@ -12,6 +15,8 @@ import {
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 
+import { NavPathAdmin } from '@/core/utils/navigation-paths-admin';
+
 export interface NavigationProps {
   openMenu: boolean;
 }
@@ -20,6 +25,8 @@ const drawerWidth = '240px';
 
 export const Navigation = (props: NavigationProps) => {
   const { openMenu } = props;
+
+  const { data: session } = useSession();
 
   return (
     <Collapse
@@ -45,17 +52,31 @@ export const Navigation = (props: NavigationProps) => {
         }}
       >
         <Box sx={{ overflow: 'auto' }}>
-          <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                  <ListItemText primary={text} sx={{ flexWrap: 'nowrap' }} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
+          {
+            // @ts-ignore
+            session?.user?.role === 'admin' && (
+              <>
+                <List>
+                  {NavPathAdmin.map((nav) => (
+                    <Link
+                      key={nav.id}
+                      href={nav.path}
+                      style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
+                      <ListItem disablePadding>
+                        <ListItemButton>
+                          {nav.icon && <ListItemIcon>{nav.icon}</ListItemIcon>}
+                          <ListItemText primary={nav.title} sx={{ flexWrap: 'nowrap' }} />
+                        </ListItemButton>
+                      </ListItem>
+                    </Link>
+                  ))}
+                </List>
+                <Divider />
+              </>
+            )
+          }
+
           <List>
             {['All mail', 'Trash', 'Spam'].map((text, index) => (
               <ListItem key={text} disablePadding>

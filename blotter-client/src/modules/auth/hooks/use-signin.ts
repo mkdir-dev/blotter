@@ -2,7 +2,7 @@ import { useMutation } from 'react-query';
 import { signIn as NextSignIn } from 'next-auth/react';
 
 import { SignInParams } from '../utils/auth.validation';
-import { SignInHook, AuthHookArgs } from './authhook.types';
+import { SignInHook, AuthHookArgs } from '../types/auth.hook.types';
 import { signin } from '@/pages/api/auth/signin';
 
 export const useSignIn = ({ onSuccess, onError }: AuthHookArgs): SignInHook => {

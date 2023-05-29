@@ -2,13 +2,14 @@ export interface Route {
   id: number;
   title: string;
   path: string;
-  icon: null;
+  // icon: (OverridableComponent<SvgIconTypeMap<{}, 'svg'>> & { muiName: string }) | null;
 }
 
 export type RoutesType = {
   index: Route;
   signin: Route;
   signup: Route;
+  users: Route;
 };
 
 export const routes: RoutesType = {
@@ -16,18 +17,22 @@ export const routes: RoutesType = {
     id: 1,
     title: '',
     path: '/',
-    icon: null,
   },
   signin: {
     id: 2,
-    title: 'Sign In',
+    title: 'Вход',
     path: '/signin',
-    icon: null,
   },
   signup: {
     id: 3,
-    title: 'Sign Up',
+    title: 'Регистрация',
     path: '/signup',
-    icon: null,
+  },
+  users: {
+    id: 4,
+    title: 'Пользователи',
+    path: '/users',
   },
 };
+
+export const NavPath = [];

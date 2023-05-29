@@ -40,7 +40,7 @@ export const Header = (props: HeaderProps) => {
   return (
     <AppBar position={'sticky'}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        {status === 'authenticated' && (
+        {status !== 'authenticated' && (
           <IconButton
             edge={'start'}
             color={'inherit'}

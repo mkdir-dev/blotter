@@ -5,7 +5,7 @@ import jwt_decode from 'jwt-decode';
 
 import { routes } from '@/core/utils/routes';
 import { API_URL } from '@/utils/config';
-import { JwtPayloadResponse, TokensResponse } from '@/modules/auth/hooks/authhook.types';
+import { JwtPayloadResponse, TokensResponse } from '@/modules/auth/types/auth.hook.types';
 import { refresh } from './refresh';
 
 const refreshToken = async (token: string) => {
